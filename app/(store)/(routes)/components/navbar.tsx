@@ -62,7 +62,11 @@ const Navbar = () => {
             </div>
             <div className="flex gap-2 items-center">
               <div className="hidden md:block">
-                <Suspense fallback={<div className="w-32 h-9 bg-slate-100 rounded animate-pulse" />}>
+                <Suspense
+                  fallback={
+                    <div className="w-32 h-9 bg-slate-100 rounded animate-pulse" />
+                  }
+                >
                   <SearchBar />
                 </Suspense>
               </div>
