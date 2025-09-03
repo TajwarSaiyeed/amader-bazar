@@ -16,3 +16,8 @@ export function dateFormatted(date: Date | string): string {
 export function onCopy(text: string) {
   navigator.clipboard.writeText(text);
 }
+
+export const formatter = new Intl.NumberFormat("en-BD", {
+  style: "currency",
+  currency: "BDT",
+});
