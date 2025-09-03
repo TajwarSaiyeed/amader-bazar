@@ -1,10 +1,39 @@
-export default function AdminBillboardsPage() {
-  return (
-    <div className="px-4 lg:px-6">
-      <h1 className="text-2xl font-semibold tracking-tight">Billboards</h1>
-      <p className="text-muted-foreground mt-2">
-        Manage promotional banners and hero sections.
-      </p>
-    </div>
+import MaxWidthWrapper from "@/components/max-width-wrapper";
+import prisma from "@/lib/prisma";
+import { dateFormatted } from "@/lib/utils";
+import {
+  BillboardClient,
+  BillboardColumn,
+} from "@/app/admin/billboards/components";
+
+export const revalidate = 0;
+
+const BillboardsPage = async () => {
+  const billboards = await prisma.billboard.findMany({
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  const formattedBillboards: BillboardColumn[] = billboards.map(
+    (billboard) => ({
+      id: billboard.id,
+      name: billboard.name,
+      createdAt: dateFormatted(billboard.createdAt),
+    })
   );
-}
+
+  return (
+    <MaxWidthWrapper>
+      <div className={"flex-col"}>
+        <div className={"flex-1 space-y-4 p-8 pt-6"}>
+          <BillboardClient data={formattedBillboards} />
+        </div>
+      </div>
+    </MaxWidthWrapper>
+  );
+};
+
+export const dynamic = "force-dynamic";
+
+export default BillboardsPage;

@@ -1,7 +1,7 @@
 import type { NextAuthConfig } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import { prisma } from "./lib/prisma";
+import prisma from "./lib/prisma";
 
 export default {
   adapter: PrismaAdapter(prisma),
@@ -22,7 +22,6 @@ export default {
     jwt: async ({ user, token }) => {
       if (user) {
         token.sub = user.id;
-        // When user logs in for the first time in the flow, include role
         token.role = (user as any).role ?? "USER";
       }
       return token;

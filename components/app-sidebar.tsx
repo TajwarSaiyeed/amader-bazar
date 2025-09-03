@@ -92,8 +92,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavUser
           user={{
             name: user?.name ?? "User",
-            email: (user as any)?.email ?? "",
-            avatar: (user as any)?.image ?? "/logo.png",
+            email: (user as { email?: string })?.email ?? "",
+            avatar: (user as { image?: string })?.image ?? "/logo.png",
           }}
           onLogout={handleLogout}
         />
