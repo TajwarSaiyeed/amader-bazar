@@ -29,6 +29,13 @@ export default auth(async function middleware(req) {
     return NextResponse.redirect(signInUrl);
   }
 
+  if (isAdminRoute && isLoggedIn) {
+    const role = req.auth?.user?.role;
+    if (role !== "ADMIN") {
+      return NextResponse.redirect(new URL("/", req.url));
+    }
+  }
+
   if (pathname === "/sign-in" && isLoggedIn) {
     return NextResponse.redirect(new URL("/admin/overview", req.url));
   }

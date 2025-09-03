@@ -14,7 +14,11 @@ export async function getProductsByCategory(
   name?: string
 ): Promise<{ error: string | null; products: ProductWithRelations[] }> {
   try {
-    const where: any = { isFeatured: true, categoryId: id };
+    const where: {
+      isFeatured: boolean;
+      categoryId: string;
+      name?: { contains: string };
+    } = { isFeatured: true, categoryId: id };
     if (name) where.name = { contains: name };
 
     const products = (await prisma.product.findMany({

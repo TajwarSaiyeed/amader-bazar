@@ -28,7 +28,7 @@ export default {
     },
   },
   pages: {
-    signIn: "/auth/signin",
+    signIn: "/sign-in",
   },
   session: {
     strategy: "jwt",

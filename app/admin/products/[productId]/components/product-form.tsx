@@ -91,7 +91,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
       }
       router.refresh();
       toast.success(toastMessage);
-    } catch (error: unknown) {
+    } catch {
       toast.error("Something went wrong.");
     } finally {
       setLoading(false);
@@ -109,7 +109,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
       router.refresh();
       router.push("/admin/products");
       toast.success("Product deleted.");
-    } catch (error: unknown) {
+    } catch {
       toast.error("Something went wrong.");
     } finally {
       setLoading(false);

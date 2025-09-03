@@ -21,3 +21,11 @@ export const formatter = new Intl.NumberFormat("en-BD", {
   style: "currency",
   currency: "BDT",
 });
+
+export function formatPrice(value: number): string {
+  try {
+    return formatter.format(value ?? 0);
+  } catch {
+    return formatter.format(0);
+  }
+}

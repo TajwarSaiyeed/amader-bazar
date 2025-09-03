@@ -14,7 +14,11 @@ export async function getProducts(
   name?: string
 ): Promise<{ error: string | null; products: ProductWithRelations[] }> {
   try {
-    const where: any = { isFeatured: true };
+    const where: {
+      isFeatured: boolean;
+      categoryId?: string;
+      name?: { contains: string };
+    } = { isFeatured: true };
     if (id) where.categoryId = id;
     if (name) where.name = { contains: name };
 
