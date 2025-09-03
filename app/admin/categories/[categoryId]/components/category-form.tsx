@@ -65,7 +65,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({ initialData }) => {
       }
       router.refresh();
       toast.success(toastMessage);
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       toast.error("Something went wrong.");
     } finally {
       setLoading(false);
@@ -83,7 +83,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({ initialData }) => {
       router.refresh();
       router.push("/admin/categories");
       toast.success("Category deleted.");
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       toast.error(
         "Make sure you removed all products using this category first."
       );

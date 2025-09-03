@@ -93,10 +93,11 @@ export const FileUpload = ({
                     try {
                       const result = await deleteImageUploadthings(image);
                       if (result.success) {
-                        onProductImagesChange &&
+                        if (onProductImagesChange) {
                           onProductImagesChange(
-                            productImages.filter((img, i) => i !== index)
+                            productImages.filter((_, i) => i !== index)
                           );
+                        }
                         toast.success("Image deleted successfully");
                       } else {
                         toast.error(result.message || "Failed to delete image");

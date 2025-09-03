@@ -68,7 +68,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
   const toastMessage = initialData ? "Product updated." : "Product created.";
   const action = initialData ? "Save changes" : "Create";
 
-  const form = useForm<ProductFormInput, any, ProductFormValues>({
+  const form = useForm<ProductFormInput, unknown, ProductFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: initialData?.name || "",

@@ -13,8 +13,8 @@ export default function NotFound() {
             <h1 className="text-9xl font-bold text-muted-foreground">404</h1>
             <h2 className="text-3xl font-semibold">Page Not Found</h2>
             <p className="text-muted-foreground max-w-md mx-auto">
-              Sorry, we couldn't find the page you're looking for. The page
-              might have been moved, deleted, or you entered the wrong URL.
+              Sorry, we couldn&apos;t find the page you&apos;re looking for. The
+              page might have been moved, deleted, or you entered the wrong URL.
             </p>
           </div>
 
@@ -31,7 +31,13 @@ export default function NotFound() {
               variant="outline"
               onClick={() => window.history.back()}
             >
-              <Link href="javascript:history.back()">
+              <Link
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  window.history.back();
+                }}
+              >
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Go Back
               </Link>

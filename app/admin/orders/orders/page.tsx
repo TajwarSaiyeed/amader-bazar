@@ -1,17 +1,20 @@
 import MaxWidthWrapper from "@/components/max-width-wrapper";
 import prisma from "@/lib/prisma";
-import OrdersClient from "@/app/admin/orders/orders/components/orders-client";
-import type { OrderColumn } from "@/app/admin/orders/orders/components/columns";
+import OrdersClient from "./components/orders-client";
 
 const OrdersPage = async () => {
   const orders = await prisma.order.findMany({
-    orderBy: { createdAt: "desc" },
+    orderBy: {
+      createdAt: "desc",
+    },
     include: {
       user: true,
       OrderItem: {
         include: {
           product: {
-            include: { images: true },
+            include: {
+              images: true,
+            },
           },
         },
       },
@@ -22,13 +25,11 @@ const OrdersPage = async () => {
     <MaxWidthWrapper>
       <div className={"flex-col"}>
         <div className={"flex-1 space-y-4 p-8 pt-6"}>
-          {orders && <OrdersClient data={orders as unknown as OrderColumn[]} />}
+          {orders && <OrdersClient data={orders} />}
         </div>
       </div>
     </MaxWidthWrapper>
   );
 };
-
 export const dynamic = "force-dynamic";
-
 export default OrdersPage;
