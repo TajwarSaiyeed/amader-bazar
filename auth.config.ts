@@ -14,15 +14,16 @@ export default {
   callbacks: {
     session: async ({ session, token }) => {
       if (session?.user) {
-        if (token.sub) {
-          session.user.id = token.sub;
-        }
+        if (token.sub) session.user.id = token.sub;
+        if (token.role) (session.user as any).role = token.role as string;
       }
       return session;
     },
     jwt: async ({ user, token }) => {
       if (user) {
         token.sub = user.id;
+        // When user logs in for the first time in the flow, include role
+        token.role = (user as any).role ?? "USER";
       }
       return token;
     },

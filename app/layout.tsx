@@ -16,6 +16,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Amader Bazar",
   description: "An online marketplace for buying your daily needs.",
+  icons: {
+    icon: "/favicon.png",
+  },
 };
 
 export default function RootLayout({
