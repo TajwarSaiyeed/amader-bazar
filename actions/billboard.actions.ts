@@ -57,7 +57,7 @@ export async function deleteBillboard(id: string) {
   // First, get the billboard to access the image URL
   const billboard = await prisma.billboard.findUnique({
     where: { id },
-    select: { image: true }
+    select: { image: true },
   });
 
   if (!billboard) {
