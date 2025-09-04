@@ -38,3 +38,10 @@ export interface UserWithDetails extends User {
     };
   })[];
 }
+
+export type SortOption =
+  | "newest"
+  | "name-asc"
+  | "name-desc"
+  | "price-low-high"
+  | "price-high-low";

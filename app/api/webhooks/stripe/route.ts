@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import Stripe from "stripe";
 import { stripe } from "@/lib/stripe";
 import prisma from "@/lib/prisma";
@@ -106,6 +107,12 @@ export async function POST(request: NextRequest) {
             });
 
             console.log("✅ Order created successfully:", order.id);
+
+            revalidatePath("/admin/overview");
+            revalidatePath("/admin/orders");
+            revalidatePath("/admin");
+            revalidatePath("/dashboard/orders");
+            console.log("🔄 Pages revalidated for fresh data");
           } else {
             console.warn("⚠️ Missing userId or productIds:", {
               userId,

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Camera, Save, CheckCircle, AlertCircle } from "lucide-react";
+import { Save, CheckCircle, AlertCircle } from "lucide-react";
 import { updateUserProfile } from "@/actions/user.actions";
 import { toast } from "sonner";
 

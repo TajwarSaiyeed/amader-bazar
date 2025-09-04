@@ -13,6 +13,10 @@ import {
   RecentOrdersSkeleton,
 } from "@/components/dashboard/loading-skeletons";
 import MaxWidthWrapper from "@/components/max-width-wrapper";
+import { DashboardRefresh } from "@/components/dashboard/dashboard-refresh";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 // Main dashboard content
 async function DashboardContent() {
@@ -35,10 +39,13 @@ async function DashboardContent() {
 
   return (
     <div className="flex flex-col space-y-6">
-      <Heading
-        title="Overview"
-        description="Admin dashboard with key metrics and analytics"
-      />
+      <div className="flex items-center justify-between">
+        <Heading
+          title="Overview"
+          description="Admin dashboard with key metrics and analytics"
+        />
+        <DashboardRefresh />
+      </div>
 
       {/* Metric Cards */}
       <MetricCards

@@ -71,6 +71,7 @@ export async function deleteUser(userId: string) {
     });
 
     revalidatePath("/admin/users");
+    revalidatePath("/admin/overview"); // Update dashboard user metrics
     return { success: true, error: null };
   } catch (error) {
     console.error("Error deleting user:", error);
@@ -110,6 +111,7 @@ export async function updateUserRole(
     });
 
     revalidatePath("/admin/users");
+    revalidatePath("/admin/overview"); // Update dashboard user metrics
     return { success: true, error: null };
   } catch (error) {
     console.error("Error updating user role:", error);

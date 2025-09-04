@@ -41,6 +41,7 @@ export async function createProduct(
     });
 
     revalidatePath("/admin/products");
+    revalidatePath("/admin/overview");
     return { ok: true, id: product.id };
   } catch (error: unknown) {
     return { ok: false, error: (error as Error).message };
@@ -74,6 +75,7 @@ export async function updateProduct(
     });
 
     revalidatePath("/admin/products");
+    revalidatePath("/admin/overview"); // Update dashboard metrics
     return { ok: true };
   } catch (error: unknown) {
     return { ok: false, error: (error as Error).message };
@@ -137,6 +139,7 @@ export async function deleteProduct(id: string) {
   });
 
   revalidatePath("/admin/products");
+  revalidatePath("/admin/overview"); // Update dashboard metrics
 }
 
 export async function getAllProducts() {

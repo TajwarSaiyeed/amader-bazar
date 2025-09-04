@@ -14,16 +14,25 @@ import Link from "next/link";
 
 export function NavMain({
   items,
+  title,
 }: {
   items: {
     title: string;
     url: string;
     icon?: Icon;
   }[];
+  title?: string;
 }) {
   const pathname = usePathname();
   return (
     <SidebarGroup>
+      {title && (
+        <div className="px-2 py-1">
+          <div className="text-xs font-medium text-sidebar-foreground/70">
+            {title}
+          </div>
+        </div>
+      )}
       <SidebarGroupContent className="flex flex-col gap-2">
         <SidebarMenu>
           {items.map((item) => (

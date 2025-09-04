@@ -12,29 +12,36 @@ const SearchBar = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathName = usePathname();
-  const currentCategory = searchParams.get("category");
+
+  // Initialize search value from URL
+  useEffect(() => {
+    const searchQuery = searchParams.get("name") || "";
+    setValue(searchQuery);
+  }, [searchParams]);
 
   useEffect(() => {
     const params = new URLSearchParams(Array.from(searchParams.entries()));
-    if (currentCategory) params.set("category", currentCategory);
-    if (debouncedValue) params.set("name", debouncedValue);
-    if (!debouncedValue) params.delete("name");
+
+    // Update or remove search parameter
+    if (debouncedValue) {
+      params.set("name", debouncedValue);
+    } else {
+      params.delete("name");
+    }
+
+    // Preserve all other filter parameters (category, price, sort, etc.)
     const url = `${pathName}?${params.toString()}`;
     router.push(url);
-  }, [router, searchParams, debouncedValue, pathName, currentCategory]);
+  }, [router, searchParams, debouncedValue, pathName]);
 
   return (
-    <div className={"relative mt-4"}>
-      <Search
-        className={"absolute top-3 left-3 transform h-4 w-4 text-slate-600"}
-      />
+    <div className="relative">
+      <Search className="absolute top-1/2 left-3 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
       <Input
         value={value}
         onChange={(e) => setValue(e.target.value)}
-        className={
-          "w-full md:max-w-[500px] pl-9 rounded-lg bg-slate-100 focus-visible:ring-slate-200 dark:bg-slate-800 dark:focus-visible:ring-slate-700"
-        }
-        placeholder={"Search for a product"}
+        className="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-border bg-background focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 text-base"
+        placeholder="Search for products..."
       />
     </div>
   );

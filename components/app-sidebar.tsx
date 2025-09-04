@@ -7,6 +7,7 @@ import {
   IconListDetails,
   IconReport,
   IconUsers,
+  IconHome,
 } from "@tabler/icons-react";
 import Image from "next/image";
 import { signOut, useSession } from "next-auth/react";
@@ -24,6 +25,13 @@ import {
 } from "@/components/ui/sidebar";
 
 const data = {
+  homeNav: [
+    {
+      title: "Back to Home",
+      url: "/",
+      icon: IconHome,
+    },
+  ],
   navMain: [
     {
       title: "Overview",
@@ -92,7 +100,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={data.homeNav} />
+        <div className="px-2">
+          <div className="h-px bg-sidebar-border" />
+        </div>
+        <NavMain items={data.navMain} title="Admin Panel" />
       </SidebarContent>
       <SidebarFooter>
         <NavUser

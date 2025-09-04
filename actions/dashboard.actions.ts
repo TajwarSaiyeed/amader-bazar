@@ -1,7 +1,13 @@
+"use server";
+
 import prisma from "@/lib/prisma";
 import { subDays, format } from "date-fns";
+import { unstable_noStore as noStore } from "next/cache";
 
 export async function getDashboardData() {
+  // Disable caching for this function
+  noStore();
+
   try {
     const now = new Date();
     const thirtyDaysAgo = subDays(now, 30);
@@ -127,6 +133,9 @@ export async function getDashboardData() {
 }
 
 export async function getProductsByCategory() {
+  // Disable caching for this function
+  noStore();
+
   try {
     const categories = await prisma.category.findMany({
       include: {
