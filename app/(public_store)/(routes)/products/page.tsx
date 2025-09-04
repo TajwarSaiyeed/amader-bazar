@@ -6,10 +6,15 @@ import { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
 
-const ProductsPage = async ({ searchParams }: { searchParams?: string }) => {
-  const params = new URLSearchParams(searchParams);
-  const category = params.get("category");
-  const name = params.get("name");
+const ProductsPage = async ({
+  searchParams,
+}: {
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
+}) => {
+  const resolvedSearchParams = await searchParams;
+  const category = resolvedSearchParams?.category as string | undefined;
+  const name = resolvedSearchParams?.name as string | undefined;
+
   const data = await getProducts(
     category ? category : undefined,
     undefined,
