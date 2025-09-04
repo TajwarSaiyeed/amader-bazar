@@ -75,6 +75,7 @@ const CartPage = () => {
                               src={image.url}
                               alt="product image"
                               className="h-full w-full rounded-md object-cover object-center sm:h-48 sm:w-48"
+                              sizes="(max-width: 640px) 96px, 192px"
                             />
                           ) : null}
                         </div>

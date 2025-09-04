@@ -125,8 +125,7 @@ export const OrderSummary = () => {
                 onChange={handleInputChange}
               />
               <span className={"text-muted-foreground text-[12px]"}>
-                আপনার বিকাশের টাকা পাঠানোর সময় যে ট্রানজেকশন আইডি পাবেন সেটা
-                এখানে দিন।
+                Enter the transaction ID you received via bKash payment.
               </span>
             </div>
             <div className="grid w-full max-w-full items-center gap-1.5">
@@ -140,7 +139,7 @@ export const OrderSummary = () => {
                 onChange={handleInputChange}
               />
               <span className={"text-muted-foreground text-[12px]"}>
-                আপনার ফোন নাম্বার দিন।
+                Enter your phone number.
               </span>
             </div>
 
@@ -154,7 +153,7 @@ export const OrderSummary = () => {
                 setOrderDetails={setOrderDetails}
               />
               <span className={"text-muted-foreground text-[12px]"}>
-                আপনার পোস্টাল কোড দিন।
+                Enter your postal code.
               </span>
             </div>
             <div className="grid w-full max-w-full items-center gap-1.5">
@@ -167,7 +166,7 @@ export const OrderSummary = () => {
                 onChange={handleInputChange}
               />
               <span className={"text-muted-foreground text-[12px]"}>
-                আপনার ঠিকানা দিন। যেমনঃ 4397 পদুয়া, লোহাগাড়া, চট্টগ্রাম।
+                Enter your address. Example: 4397 Padua, Lohagara, Chittagong.
               </span>
             </div>
           </div>

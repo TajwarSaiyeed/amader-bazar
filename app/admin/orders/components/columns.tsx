@@ -2,7 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { dateFormatted } from "@/lib/utils";
+import { dateFormatted, formatPrice } from "@/lib/utils";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import type { Order, OrderItem, ProductImage, User } from "@/generated/prisma";
@@ -56,7 +56,7 @@ export const columns: ColumnDef<OrderColumn>[] = [
   {
     header: "Total",
     accessorKey: "total",
-    cell: ({ row }) => <span>{row.original.total}</span>,
+    cell: ({ row }) => <span>{formatPrice(row.original.total)}</span>,
   },
   {
     header: "Postal Code",

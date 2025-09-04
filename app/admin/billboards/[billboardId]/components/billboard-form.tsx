@@ -181,7 +181,7 @@ export const BillBoardForm: FC<BillboardFormProps> = ({ initialData }) => {
                   <div className={"space-y-1 leading-none"}>
                     <FormLabel>Featured</FormLabel>
                     <FormDescription>
-                      এই বিলবোর্ডটি হোম পেজে প্রদর্শিত হবে।
+                      This billboard will be shown on the home page.
                     </FormDescription>
                   </div>
                 </FormItem>
@@ -205,7 +205,7 @@ export const BillBoardForm: FC<BillboardFormProps> = ({ initialData }) => {
                   <div className={"space-y-1 leading-none"}>
                     <FormLabel>Archived</FormLabel>
                     <FormDescription>
-                      এই বিলবোর্ডটি হোম পেজে প্রদর্শিত হবে না।
+                      This billboard will not be displayed on the home page.
                     </FormDescription>
                   </div>
                 </FormItem>

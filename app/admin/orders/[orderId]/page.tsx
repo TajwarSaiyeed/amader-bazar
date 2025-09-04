@@ -11,7 +11,7 @@ import {
 import MaxWidthWrapper from "@/components/max-width-wrapper";
 import { getOrderDetails } from "@/actions/order.actions";
 import Image from "next/image";
-import { dateFormatted } from "@/lib/utils";
+import { dateFormatted, formatPrice } from "@/lib/utils";
 
 type OrderDetailsProps = {
   params: Promise<{
@@ -88,7 +88,7 @@ const OrderDetails = async ({ params }: OrderDetailsProps) => {
                 <div>
                   <div className="grid gap-1 text-sm">
                     <div className="font-medium">Total amount</div>
-                    <div>৳{order.total}</div>
+                    <div>{formatPrice(order.total)}</div>
                   </div>
                 </div>
                 <div>
@@ -131,7 +131,9 @@ const OrderDetails = async ({ params }: OrderDetailsProps) => {
                             </div>
                           </TableCell>
                           <TableCell>1</TableCell>
-                          <TableCell>৳{item.product.price}</TableCell>
+                          <TableCell>
+                            {formatPrice(item.product.price)}
+                          </TableCell>
                         </TableRow>
                       ))}
                   </TableBody>

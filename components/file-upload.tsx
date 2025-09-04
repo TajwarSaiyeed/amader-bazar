@@ -35,6 +35,9 @@ export const FileUpload = ({
           src={value}
           alt={"upload"}
           className={"rounded-md object-cover"}
+          sizes="300px"
+          unoptimized
+          priority
         />
         <div className="absolute top-2 right-2 cursor-pointer z-10">
           <Button
@@ -84,6 +87,8 @@ export const FileUpload = ({
                 src={image}
                 alt={"upload"}
                 className={"rounded-md object-cover"}
+                sizes="300px"
+                unoptimized
               />
               <div className="absolute top-2 right-2 cursor-pointer z-10">
                 <Button

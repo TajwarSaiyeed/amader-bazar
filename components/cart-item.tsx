@@ -27,6 +27,7 @@ const CartItem = ({ product }: CartItemProps) => {
                 alt={product?.name || "Product"}
                 fill
                 className="absolute object-cover"
+                sizes="64px"
               />
             ) : (
               <div className="flex h-full items-center justify-center bg-secondary">
