@@ -44,11 +44,11 @@ export function DashboardRefresh() {
       setCountdown((prev) => {
         if (prev <= 1) {
           handleRefresh();
-          return 30; // Reset countdown
+          return 30;
         }
         return prev - 1;
       });
-    }, 1000); // Update every second
+    }, 1000);
 
     return () => clearInterval(interval);
   }, [autoRefresh, handleRefresh]);

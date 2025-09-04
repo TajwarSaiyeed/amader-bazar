@@ -240,7 +240,7 @@ Category (1:n) Product
 ### Stripe Webhook Setup
 
 1. Create webhook endpoint in Stripe dashboard
-2. Point to: `https://yourdomain.com/api/webhooks/stripe`
+2. Point to: `https://amader-bazar.tajwar.app/api/webhooks/stripe`
 3. Add webhook secret to environment variables
 
 ## 🛡️ Security
@@ -322,65 +322,3 @@ npm run build
   "db:studio": "prisma studio"
 }
 ```
-
-### Code Style
-
-- **ESLint** - Code linting and formatting
-- **Prettier** - Consistent code formatting
-- **TypeScript** - Strict type checking
-- **Tailwind CSS** - Utility-first styling
-
-## 📈 Performance
-
-### Optimization Features
-
-- **Next.js App Router** - Optimized routing and caching
-- **Server Components** - Reduced client-side JavaScript
-- **Image Optimization** - Next.js automatic image optimization
-- **Code Splitting** - Automatic bundle optimization
-
-### Caching Strategy
-
-- **React Cache** - Component-level caching
-- **Next.js Cache** - Page and API route caching
-- **Database Optimization** - Efficient Prisma queries
-
-## 🤝 Contributing
-
-1. **Fork the repository**
-2. **Create feature branch** (`git checkout -b feature/amazing-feature`)
-3. **Commit changes** (`git commit -m 'Add amazing feature'`)
-4. **Push to branch** (`git push origin feature/amazing-feature`)
-5. **Open Pull Request**
-
-### Development Guidelines
-
-- Follow TypeScript strict mode
-- Use Tailwind CSS for styling
-- Implement proper error handling
-- Add appropriate type definitions
-- Test thoroughly before submitting
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 📞 Support
-
-For support and questions:
-
-- **Issues** - GitHub Issues for bug reports
-- **Discussions** - GitHub Discussions for questions
-- **Email** - contact@amaderbazar.com
-
-## 🎉 Acknowledgments
-
-- **Next.js Team** - Amazing React framework
-- **Vercel** - Excellent deployment platform
-- **Shadcn** - Beautiful UI components
-- **Stripe** - Reliable payment processing
-- **Prisma** - Excellent database toolkit
-
----
-
-Built with ❤️ by [Your Name](https://github.com/yourusername)
