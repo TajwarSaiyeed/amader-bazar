@@ -85,14 +85,18 @@ export const ProductForm: React.FC<ProductFormProps> = ({
     try {
       setLoading(true);
       if (initialData) {
-        await updateProduct({ ...data, id: initialData.id });
+        const res = await updateProduct({ ...data, id: initialData.id });
+        if (!res.ok) throw new Error(res.error);
       } else {
-        await createProduct(data);
+        const res = await createProduct(data);
+        if (!res.ok) throw new Error(res.error);
       }
       router.refresh();
       toast.success(toastMessage);
-    } catch {
-      toast.error("Something went wrong.");
+      router.push("/admin/products");
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : "Something went wrong.";
+      toast.error(message || "Something went wrong.");
     } finally {
       setLoading(false);
     }

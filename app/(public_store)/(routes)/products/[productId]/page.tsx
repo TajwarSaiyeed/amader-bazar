@@ -14,9 +14,10 @@ export const dynamic = "force-dynamic";
 export const generateMetadata = async ({
   params,
 }: {
-  params: { productId: string };
+  params: Promise<{ productId: string }>;
 }): Promise<Metadata> => {
-  const { product } = await getProduct(params.productId);
+  const { productId } = await params;
+  const { product } = await getProduct(productId);
 
   if (!product) {
     return {
@@ -29,8 +30,13 @@ export const generateMetadata = async ({
     description: "Amader Bazar is an online store for all your needs.",
   };
 };
-const ProductPage = async ({ params }: { params: { productId: string } }) => {
-  const { product } = await getProduct(params.productId);
+const ProductPage = async ({
+  params,
+}: {
+  params: Promise<{ productId: string }>;
+}) => {
+  const { productId } = await params;
+  const { product } = await getProduct(productId);
 
   if (!product) {
     return redirect("/products");

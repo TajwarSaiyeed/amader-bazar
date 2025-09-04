@@ -1,7 +1,6 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { z } from "zod";
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
@@ -12,39 +11,43 @@ const UpdateCategorySchema = categoryFormSchema.extend({ id: z.string() });
 
 export async function createCategory(
   input: z.infer<typeof CreateCategorySchema>
-) {
-  const session = await auth();
-  if (!session?.user) {
-    throw new Error("Unauthorized");
+): Promise<{ ok: true; id: string } | { ok: false; error: string }> {
+  try {
+    const session = await auth();
+    if (!session?.user) return { ok: false, error: "Unauthorized" };
+
+    const values = CreateCategorySchema.parse(input);
+
+    const category = await prisma.category.create({
+      data: values,
+    });
+
+    revalidatePath("/admin/categories");
+    return { ok: true, id: category.id };
+  } catch (error: unknown) {
+    return { ok: false, error: (error as Error).message };
   }
-
-  const values = CreateCategorySchema.parse(input);
-
-  await prisma.category.create({
-    data: values,
-  });
-
-  revalidatePath("/admin/categories");
-  redirect("/admin/categories");
 }
 
 export async function updateCategory(
   input: z.infer<typeof UpdateCategorySchema>
-) {
-  const session = await auth();
-  if (!session?.user) {
-    throw new Error("Unauthorized");
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  try {
+    const session = await auth();
+    if (!session?.user) return { ok: false, error: "Unauthorized" };
+
+    const { id, ...values } = UpdateCategorySchema.parse(input);
+
+    await prisma.category.update({
+      where: { id },
+      data: values,
+    });
+
+    revalidatePath("/admin/categories");
+    return { ok: true };
+  } catch (error: unknown) {
+    return { ok: false, error: (error as Error).message };
   }
-
-  const { id, ...values } = UpdateCategorySchema.parse(input);
-
-  await prisma.category.update({
-    where: { id },
-    data: values,
-  });
-
-  revalidatePath("/admin/categories");
-  redirect("/admin/categories");
 }
 
 export async function deleteCategory(id: string) {

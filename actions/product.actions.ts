@@ -13,63 +13,71 @@ const UpdateProductSchema = productFormSchema.extend({ id: z.string() });
 
 export async function createProduct(
   input: z.infer<typeof CreateProductSchema>
-) {
-  const session = await auth();
-  if (!session?.user) {
-    throw new Error("Unauthorized");
-  }
+): Promise<{ ok: true; id: string } | { ok: false; error: string }> {
+  try {
+    const session = await auth();
+    if (!session?.user) {
+      return { ok: false, error: "Unauthorized" };
+    }
 
-  const values = CreateProductSchema.parse(input);
+    const values = CreateProductSchema.parse(input);
 
-  await prisma.product.create({
-    data: {
-      name: values.name,
-      description: values.description,
-      price: values.price,
-      categoryId: values.categoryId,
-      isFeatured: values.isFeatured,
-      isArchived: values.isArchived,
-      images: {
-        createMany: {
-          data: values.images.map((image: { url: string }) => ({
-            url: image.url,
-          })),
+    const product = await prisma.product.create({
+      data: {
+        name: values.name,
+        description: values.description,
+        price: values.price,
+        categoryId: values.categoryId,
+        isFeatured: values.isFeatured,
+        isArchived: values.isArchived,
+        images: {
+          createMany: {
+            data: values.images.map((image: { url: string }) => ({
+              url: image.url,
+            })),
+          },
         },
       },
-    },
-  });
+    });
 
-  revalidatePath("/admin/products");
-  redirect("/admin/products");
+    revalidatePath("/admin/products");
+    return { ok: true, id: product.id };
+  } catch (error: unknown) {
+    return { ok: false, error: (error as Error).message };
+  }
 }
 
 export async function updateProduct(
   input: z.infer<typeof UpdateProductSchema>
-) {
-  const session = await auth();
-  if (!session?.user) {
-    throw new Error("Unauthorized");
-  }
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  try {
+    const session = await auth();
+    if (!session?.user) {
+      return { ok: false, error: "Unauthorized" };
+    }
 
-  const { id, images, ...values } = UpdateProductSchema.parse(input);
+    const { id, images, ...values } = UpdateProductSchema.parse(input);
 
-  await prisma.product.update({
-    where: { id },
-    data: {
-      ...values,
-      images: {
-        deleteMany: {},
-        createMany: {
-          data: images.map((image: { url: string }) => ({
-            url: image.url,
-          })),
+    await prisma.product.update({
+      where: { id },
+      data: {
+        ...values,
+        images: {
+          deleteMany: {},
+          createMany: {
+            data: images.map((image: { url: string }) => ({
+              url: image.url,
+            })),
+          },
         },
       },
-    },
-  });
+    });
 
-  revalidatePath("/admin/products");
-  redirect("/admin/products");
+    revalidatePath("/admin/products");
+    return { ok: true };
+  } catch (error: unknown) {
+    return { ok: false, error: (error as Error).message };
+  }
 }
 
 export async function deleteProduct(id: string) {

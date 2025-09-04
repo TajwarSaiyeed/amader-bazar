@@ -19,9 +19,12 @@ import Image from "next/image";
 
 export const Cart = () => {
   const { items } = useCart();
-  const itemCount = items.length;
+  const safeItems = items.filter(
+    (p) => p && typeof p.id === "string" && typeof p.price === "number"
+  );
+  const itemCount = safeItems.length;
 
-  const cartTotal = items.reduce((total, data) => total + data.price, 0);
+  const cartTotal = safeItems.reduce((total, data) => total + data.price, 0);
 
   const fee = 1;
   return (
@@ -35,7 +38,7 @@ export const Cart = () => {
           {itemCount}
         </span>
       </SheetTrigger>
-      <SheetContent className="flex w-full flex-col pr-0 sm:max-w-lg">
+      <SheetContent className="flex w-full px-2 flex-col pr-0 sm:max-w-lg">
         <SheetHeader className="space-y-2.5 pr-6">
           <SheetTitle>Cart ({itemCount})</SheetTitle>
         </SheetHeader>
@@ -43,7 +46,7 @@ export const Cart = () => {
           <>
             <div className="flex w-full flex-col pr-6">
               <ScrollArea className={"max-h-[400px]"}>
-                {items.map((item, i: number) => (
+                {safeItems.map((item, i: number) => (
                   <CartItem key={i} product={item} />
                 ))}
               </ScrollArea>
@@ -56,12 +59,8 @@ export const Cart = () => {
                   <span>Free</span>
                 </div>
                 <div className="flex">
-                  <span className="flex-1">Transaction Fee</span>
-                  <span>{formatPrice(fee)}</span>
-                </div>
-                <div className="flex">
                   <span className="flex-1">Total</span>
-                  <span>{formatPrice(cartTotal + fee)}</span>
+                  <span>{formatPrice(cartTotal)}</span>
                 </div>
               </div>
 

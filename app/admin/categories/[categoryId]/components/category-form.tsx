@@ -59,12 +59,15 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({ initialData }) => {
     try {
       setLoading(true);
       if (initialData) {
-        await updateCategory({ ...data, id: initialData.id });
+        const res = await updateCategory({ ...data, id: initialData.id });
+        if (!res.ok) throw new Error(res.error);
       } else {
-        await createCategory(data);
+        const res = await createCategory(data);
+        if (!res.ok) throw new Error(res.error);
       }
       router.refresh();
       toast.success(toastMessage);
+      router.push("/admin/categories");
     } catch {
       toast.error("Something went wrong.");
     } finally {

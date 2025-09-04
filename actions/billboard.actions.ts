@@ -1,7 +1,6 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { z } from "zod";
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
@@ -13,39 +12,47 @@ const UpdateBillboardSchema = billboardFormSchema.extend({ id: z.string() });
 
 export async function createBillboard(
   input: z.infer<typeof CreateBillboardSchema>
-) {
-  const session = await auth();
-  if (!session?.user) {
-    throw new Error("Unauthorized");
+): Promise<{ ok: true; id: string } | { ok: false; error: string }> {
+  try {
+    const session = await auth();
+    if (!session?.user) {
+      return { ok: false, error: "Unauthorized" };
+    }
+
+    const values = CreateBillboardSchema.parse(input);
+
+    const billboard = await prisma.billboard.create({
+      data: values,
+    });
+
+    revalidatePath("/admin/billboards");
+    return { ok: true, id: billboard.id };
+  } catch (error: unknown) {
+    return { ok: false, error: (error as Error).message };
   }
-
-  const values = CreateBillboardSchema.parse(input);
-
-  await prisma.billboard.create({
-    data: values,
-  });
-
-  revalidatePath("/admin/billboards");
-  redirect("/admin/billboards");
 }
 
 export async function updateBillboard(
   input: z.infer<typeof UpdateBillboardSchema>
-) {
-  const session = await auth();
-  if (!session?.user) {
-    throw new Error("Unauthorized");
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  try {
+    const session = await auth();
+    if (!session?.user) {
+      return { ok: false, error: "Unauthorized" };
+    }
+
+    const { id, ...values } = UpdateBillboardSchema.parse(input);
+
+    await prisma.billboard.update({
+      where: { id },
+      data: values,
+    });
+
+    revalidatePath("/admin/billboards");
+    return { ok: true };
+  } catch (error: unknown) {
+    return { ok: false, error: (error as Error).message };
   }
-
-  const { id, ...values } = UpdateBillboardSchema.parse(input);
-
-  await prisma.billboard.update({
-    where: { id },
-    data: values,
-  });
-
-  revalidatePath("/admin/billboards");
-  redirect("/admin/billboards");
 }
 
 export async function deleteBillboard(id: string) {

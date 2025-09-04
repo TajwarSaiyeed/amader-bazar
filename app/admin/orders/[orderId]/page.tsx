@@ -13,13 +13,14 @@ import { getOrderDetails } from "@/actions/order.actions";
 import Image from "next/image";
 import { dateFormatted } from "@/lib/utils";
 
-interface OrderDetailsProps {
-  params: {
+type OrderDetailsProps = {
+  params: Promise<{
     orderId: string;
-  };
-}
+  }>;
+};
 
-const OrderDetails = async ({ params: { orderId } }: OrderDetailsProps) => {
+const OrderDetails = async ({ params }: OrderDetailsProps) => {
+  const { orderId } = await params;
   const { order, error } = await getOrderDetails(orderId);
 
   if (error) {

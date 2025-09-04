@@ -1,3 +1,5 @@
+"use client";
+
 import { ImageIcon, X } from "lucide-react";
 import Image from "next/image";
 import type { Product, Category, ProductImage } from "@/generated/prisma";
@@ -12,7 +14,7 @@ export interface CartItemProps {
 }
 
 const CartItem = ({ product }: CartItemProps) => {
-  const image = product.images?.[0];
+  const image = product?.images?.[0];
   const { removeItem } = useCart();
   return (
     <div className="space-y-3 py-2">
@@ -22,7 +24,7 @@ const CartItem = ({ product }: CartItemProps) => {
             {image?.url ? (
               <Image
                 src={image.url}
-                alt={product.name}
+                alt={product?.name || "Product"}
                 fill
                 className="absolute object-cover"
               />
@@ -38,16 +40,16 @@ const CartItem = ({ product }: CartItemProps) => {
 
           <div className="flex flex-col self-start">
             <span className="line-clamp-1 text-sm font-medium mb-1">
-              {product.name}
+              {product?.name || "Untitled Product"}
             </span>
 
             <span className="line-clamp-1 text-xs capitalize text-muted-foreground">
-              {product.category.name}
+              {product?.category?.name || "Uncategorized"}
             </span>
 
             <div className="mt-4 text-xs text-muted-foreground">
               <button
-                onClick={() => removeItem(product.id)}
+                onClick={() => product?.id && removeItem(product.id)}
                 className="flex items-center gap-0.5"
               >
                 <X className="w-3 h-4" />
@@ -59,7 +61,7 @@ const CartItem = ({ product }: CartItemProps) => {
 
         <div className="flex flex-col space-y-1 font-medium">
           <span className="ml-auto line-clamp-1 text-sm">
-            {formatPrice(product.price)}
+            {formatPrice(Number(product?.price ?? 0))}
           </span>
         </div>
       </div>

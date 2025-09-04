@@ -62,14 +62,17 @@ export const BillBoardForm: FC<BillboardFormProps> = ({ initialData }) => {
     try {
       setLoading(true);
       if (initialData) {
-        await updateBillboard({ id: initialData.id, ...values });
+        const res = await updateBillboard({ id: initialData.id, ...values });
+        if (!res.ok) throw new Error(res.error);
       } else {
-        await createBillboard(values);
+        const res = await createBillboard(values);
+        if (!res.ok) throw new Error(res.error);
       }
       toast.success("Success", {
         description: toastMessage,
         position: "top-right",
       });
+      router.push("/admin/billboards");
     } catch {
       toast.error("Something went wrong");
     } finally {
