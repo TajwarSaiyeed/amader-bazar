@@ -86,6 +86,28 @@ export async function deleteProduct(id: string) {
     throw new Error("Unauthorized");
   }
 
+  // Check if product is in any orders
+  const orderItemsCount = await prisma.orderItem.count({
+    where: { productId: id },
+  });
+
+  if (orderItemsCount > 0) {
+    throw new Error(
+      `Cannot delete product. It is referenced in ${orderItemsCount} order(s). Products that have been ordered cannot be deleted to maintain order history.`
+    );
+  }
+
+  // Check if product is in any wishlists
+  const wishlistCount = await prisma.wishlist.count({
+    where: { productId: id },
+  });
+
+  if (wishlistCount > 0) {
+    throw new Error(
+      `Cannot delete product. It is in ${wishlistCount} user's wishlist(s). Please remove from all wishlists first or archive the product instead.`
+    );
+  }
+
   // First, get the product with its images to delete them from UploadThing
   const product = await prisma.product.findUnique({
     where: { id },

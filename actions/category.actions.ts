@@ -56,6 +56,17 @@ export async function deleteCategory(id: string) {
     throw new Error("Unauthorized");
   }
 
+  // Check if category has any products
+  const productsCount = await prisma.product.count({
+    where: { categoryId: id },
+  });
+
+  if (productsCount > 0) {
+    throw new Error(
+      `Cannot delete category. It contains ${productsCount} product(s). Please move or delete all products from this category first.`
+    );
+  }
+
   await prisma.category.delete({
     where: { id },
   });

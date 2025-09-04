@@ -33,12 +33,10 @@ export async function deleteUser(userId: string) {
       return { success: false, error: "Unauthorized" };
     }
 
-    // Prevent admin from deleting themselves
     if (session.user.id === userId) {
       return { success: false, error: "You cannot delete your own account" };
     }
 
-    // Check if user exists
     const user = await prisma.user.findUnique({
       where: { id: userId },
     });
@@ -47,7 +45,27 @@ export async function deleteUser(userId: string) {
       return { success: false, error: "User not found" };
     }
 
-    // Delete user
+    const ordersCount = await prisma.order.count({
+      where: { userId },
+    });
+
+    if (ordersCount > 0) {
+      return {
+        success: false,
+        error: `Cannot delete user. They have ${ordersCount} order(s) in the system. Users with order history cannot be deleted to maintain business records.`,
+      };
+    }
+
+    const wishlistCount = await prisma.wishlist.count({
+      where: { userId },
+    });
+
+    if (wishlistCount > 0) {
+      console.log(
+        `Note: User has ${wishlistCount} wishlist items that will be removed.`
+      );
+    }
+
     await prisma.user.delete({
       where: { id: userId },
     });
