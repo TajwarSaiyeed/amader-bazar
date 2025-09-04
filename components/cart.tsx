@@ -26,7 +26,6 @@ export const Cart = () => {
 
   const cartTotal = safeItems.reduce((total, data) => total + data.price, 0);
 
-  const fee = 1;
   return (
     <Sheet>
       <SheetTrigger className={"group -m-2 flex items-center p-2"}>

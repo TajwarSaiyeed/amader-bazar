@@ -5,6 +5,7 @@ import ProductReel from "@/components/product-reel";
 import BrandNewReel from "./components/brand-new-reel";
 import CategoryReel from "./components/category-reel";
 import { Suspense } from "react";
+import type { IProductsProps } from "@/types";
 
 export const revalidate = 10;
 
@@ -44,38 +45,47 @@ const HomePage = async () => {
     <MaxWidthWrapper>
       <Hero billboards={formattedBillboards} />
 
-      <Suspense
-        fallback={
-          <ProductReel
-            title="Brand New"
-            subtitle="The latest and greatest from our store."
-            href="/products"
-            data={[] as any}
-            loading
-            skeletonNumber={4}
-          />
-        }
-      >
-        <BrandNewReel />
-      </Suspense>
+      {/** typed empty products array for skeleton fallbacks */}
+      {/* eslint-disable-next-line @typescript-eslint/consistent-type-definitions */}
+      {(() => {
+        const EMPTY_PRODUCTS: IProductsProps["data"] = [];
+        return (
+          <>
+            <Suspense
+              fallback={
+                <ProductReel
+                  title="Brand New"
+                  subtitle="The latest and greatest from our store."
+                  href="/products"
+                  data={EMPTY_PRODUCTS}
+                  loading
+                  skeletonNumber={4}
+                />
+              }
+            >
+              <BrandNewReel />
+            </Suspense>
 
-      {filteredCategories.map((category) => (
-        <Suspense
-          key={category.id}
-          fallback={
-            <ProductReel
-              title={category.name}
-              subtitle={`Top picks in ${category.name}.`}
-              href={`/products?category=${category.id}`}
-              data={[] as any}
-              loading
-              skeletonNumber={4}
-            />
-          }
-        >
-          <CategoryReel category={category as any} limit={4} />
-        </Suspense>
-      ))}
+            {filteredCategories.map((category) => (
+              <Suspense
+                key={category.id}
+                fallback={
+                  <ProductReel
+                    title={category.name}
+                    subtitle={`Top picks in ${category.name}.`}
+                    href={`/products?category=${category.id}`}
+                    data={EMPTY_PRODUCTS}
+                    loading
+                    skeletonNumber={4}
+                  />
+                }
+              >
+                <CategoryReel category={category} limit={4} />
+              </Suspense>
+            ))}
+          </>
+        );
+      })()}
     </MaxWidthWrapper>
   );
 };
