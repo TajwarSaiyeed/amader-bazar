@@ -98,7 +98,9 @@ export function DashboardCharts({
                 tickLine={false}
                 axisLine={false}
                 tickMargin={8}
-                tickFormatter={(value) => format(new Date(value as string | number | Date), "MMM d")}
+                tickFormatter={(value) =>
+                  format(new Date(value as string | number | Date), "MMM d")
+                }
               />
               <YAxis tickLine={false} axisLine={false} tickMargin={8} />
               <ChartTooltip
@@ -106,7 +108,10 @@ export function DashboardCharts({
                 content={
                   <ChartTooltipContent
                     labelFormatter={(value) =>
-                      format(new Date(value as string | number | Date), "MMM dd, yyyy")
+                      format(
+                        new Date(value as string | number | Date),
+                        "MMM dd, yyyy"
+                      )
                     }
                   />
                 }
