@@ -6,7 +6,7 @@ import prisma from "@/lib/prisma";
 
 export async function POST(request: NextRequest) {
   console.log("🔗 Webhook received");
-  
+
   try {
     const buf = await request.arrayBuffer();
     const body = Buffer.from(buf);
@@ -15,7 +15,10 @@ export async function POST(request: NextRequest) {
     const signature = headersList.get("Stripe-Signature");
 
     console.log("📝 Signature:", signature ? "Present" : "Missing");
-    console.log("🔑 Webhook Secret:", process.env.STRIPE_WEBHOOK_SECRET ? "Present" : "Missing");
+    console.log(
+      "🔑 Webhook Secret:",
+      process.env.STRIPE_WEBHOOK_SECRET ? "Present" : "Missing"
+    );
 
     if (!signature) {
       console.error("❌ No signature found in headers");
@@ -75,7 +78,7 @@ export async function POST(request: NextRequest) {
 
           if (userId && productIds.length > 0) {
             console.log("🏗️ Creating order in database...");
-            
+
             const order = await prisma.order.create({
               data: {
                 userId,
@@ -101,10 +104,13 @@ export async function POST(request: NextRequest) {
                 },
               },
             });
-            
+
             console.log("✅ Order created successfully:", order.id);
           } else {
-            console.warn("⚠️ Missing userId or productIds:", { userId, productIds });
+            console.warn("⚠️ Missing userId or productIds:", {
+              userId,
+              productIds,
+            });
           }
           break;
         }
