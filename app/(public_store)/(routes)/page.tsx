@@ -46,7 +46,6 @@ const HomePage = async () => {
       <Hero billboards={formattedBillboards} />
 
       {/** typed empty products array for skeleton fallbacks */}
-      {/* eslint-disable-next-line @typescript-eslint/consistent-type-definitions */}
       {(() => {
         const EMPTY_PRODUCTS: IProductsProps["data"] = [];
         return (
