@@ -8,7 +8,7 @@ import type { CartItem } from "@/store/use-cart";
 import { useSession } from "next-auth/react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { PostCodeCombobox } from "@/app/(store)/(routes)/cart/components/post-code-combobox";
+import { PostCodeCombobox } from "@/app/(public_store)/(routes)/cart/components/post-code-combobox";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 

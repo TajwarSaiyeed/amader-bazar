@@ -8,7 +8,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import MaxWidthWrapper from "@/components/max-width-wrapper";
-import { OrderSummary } from "@/app/(store)/(routes)/cart/components/order-summary";
+import { OrderSummary } from "@/app/(public_store)/(routes)/cart/components/order-summary";
 
 const CartPage = () => {
   const { items, removeItem } = useCart();
