@@ -5,6 +5,8 @@ import { stripe } from "@/lib/stripe";
 import prisma from "@/lib/prisma";
 
 export async function POST(request: NextRequest) {
+  console.log("🔗 Webhook received");
+  
   try {
     const buf = await request.arrayBuffer();
     const body = Buffer.from(buf);
@@ -12,8 +14,17 @@ export async function POST(request: NextRequest) {
     const headersList = await headers();
     const signature = headersList.get("Stripe-Signature");
 
+    console.log("📝 Signature:", signature ? "Present" : "Missing");
+    console.log("🔑 Webhook Secret:", process.env.STRIPE_WEBHOOK_SECRET ? "Present" : "Missing");
+
     if (!signature) {
+      console.error("❌ No signature found in headers");
       return NextResponse.json({ error: "No signature" }, { status: 400 });
+    }
+
+    if (!process.env.STRIPE_WEBHOOK_SECRET) {
+      console.error("❌ No webhook secret in environment");
+      return NextResponse.json({ error: "No webhook secret" }, { status: 500 });
     }
 
     let event: Stripe.Event;
@@ -24,20 +35,29 @@ export async function POST(request: NextRequest) {
         signature,
         process.env.STRIPE_WEBHOOK_SECRET!
       );
-    } catch {
+      console.log("✅ Signature verified successfully");
+    } catch (err) {
+      console.error("❌ Signature verification failed:", err);
       return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
     }
+
+    console.log("📦 Event type:", event.type);
 
     try {
       switch (event.type) {
         case "checkout.session.completed": {
           const session = event.data.object as Stripe.Checkout.Session;
+          console.log("💳 Processing checkout session:", session.id);
 
           const userId = session.metadata?.userId;
           const productIds = session.metadata?.productIds
             ? JSON.parse(session.metadata.productIds)
             : [];
           const total = parseFloat(session.metadata?.total || "0");
+
+          console.log("👤 User ID:", userId);
+          console.log("🛒 Product IDs:", productIds);
+          console.log("💰 Total:", total);
 
           const customerDetails = session.customer_details;
 
@@ -54,7 +74,9 @@ export async function POST(request: NextRequest) {
             : "No address provided";
 
           if (userId && productIds.length > 0) {
-            await prisma.order.create({
+            console.log("🏗️ Creating order in database...");
+            
+            const order = await prisma.order.create({
               data: {
                 userId,
                 total,
@@ -79,6 +101,10 @@ export async function POST(request: NextRequest) {
                 },
               },
             });
+            
+            console.log("✅ Order created successfully:", order.id);
+          } else {
+            console.warn("⚠️ Missing userId or productIds:", { userId, productIds });
           }
           break;
         }
@@ -100,13 +126,15 @@ export async function POST(request: NextRequest) {
       }
 
       return NextResponse.json({ received: true });
-    } catch {
+    } catch (error) {
+      console.error("❌ Webhook processing error:", error);
       return NextResponse.json(
         { error: "Webhook processing error" },
         { status: 500 }
       );
     }
-  } catch {
+  } catch (error) {
+    console.error("❌ Webhook error:", error);
     return NextResponse.json({ error: "Webhook error" }, { status: 500 });
   }
 }
