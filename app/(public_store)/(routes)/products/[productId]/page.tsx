@@ -48,37 +48,54 @@ const ProductPage = async ({
 
   return (
     <MaxWidthWrapper>
-      <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:grid lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8">
-        <div className="lg:max-w-lg lg:self-end">
-          <div className={"mt-4"}>
-            <h1
-              className={
-                "text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-300 sm:text-4xl"
-              }
-            >
-              {product.name}
-            </h1>
+      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
+        <div className="lg:grid lg:grid-cols-2 lg:gap-x-12 lg:items-start">
+          {/* Image Slider - Left Side */}
+          <div className="flex flex-col">
+            <div className="aspect-square rounded-lg bg-gray-100">
+              <ProductImageSlider images={images} next={true} previous={true} />
+            </div>
           </div>
 
-          <section className="mt-4">
-            <div className="flex items-center">
-              <p className="font-medium text-gray-900 dark:text-gray-100">
-                {formatPrice(product.price)}
-              </p>
+          {/* Product Details - Right Side */}
+          <div className="mt-10 lg:mt-0">
+            {/* Product Title */}
+            <div className="mb-6">
+              <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100 sm:text-4xl">
+                {product.name}
+              </h1>
+            </div>
 
-              <div className="ml-4 border-l text-muted-foreground border-gray-300 pl-4">
-                {product.category.name}
+            {/* Price and Category */}
+            <div className="mb-6">
+              <div className="flex items-center">
+                <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+                  {formatPrice(product.price)}
+                </p>
+                <div className="ml-4 border-l border-gray-300 pl-4">
+                  <span className="text-sm text-muted-foreground">
+                    Category:{" "}
+                  </span>
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    {product.category.name}
+                  </span>
+                </div>
               </div>
             </div>
 
-            <div className="mt-4 space-y-6">
-              <pre
+            {/* Description */}
+            <div className="mb-8">
+              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-3">
+                Description
+              </h3>
+              <div
+                className="text-base text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap"
                 dangerouslySetInnerHTML={{ __html: product.description }}
-                className={"text-muted-foreground text-[16px]"}
               />
             </div>
 
-            <div className="mt-6 flex items-center">
+            {/* Delivery Info */}
+            <div className="mb-8 flex items-center">
               <Check
                 aria-hidden="true"
                 className="h-5 w-5 flex-shrink-0 text-green-500"
@@ -87,25 +104,24 @@ const ProductPage = async ({
                 Eligible for instant delivery
               </p>
             </div>
-          </section>
-        </div>
-        <div className="mt-10 lg:col-start-2 lg:row-span-2 lg:mt-0 lg:self-center">
-          <div className="aspect-square rounded-lg">
-            <ProductImageSlider images={images} next={true} previous={true} />
-          </div>
-        </div>
-        <div className="mt-10 lg:col-start-1 lg:row-start-2 lg:max-w-lg lg:self-start">
-          <div className="mt-10">
-            <AddToCartButton product={product} />
+
+            {/* Add to Cart */}
+            <div className="mb-8">
+              <AddToCartButton product={product} />
+            </div>
           </div>
         </div>
       </div>
-      <ProductReel
-        href={`/products?category=${product.categoryId}`}
-        title={`Similar ${product.category.name}`}
-        subtitle={`Browse similar high-quality ${product.category.name} just like '${product.name}'`}
-        data={products.products}
-      />
+
+      {/* Similar Products */}
+      <div className="mt-16">
+        <ProductReel
+          href={`/products?category=${product.categoryId}`}
+          title={`Similar ${product.category.name}`}
+          subtitle={`Browse similar high-quality ${product.category.name} just like '${product.name}'`}
+          data={products.products}
+        />
+      </div>
     </MaxWidthWrapper>
   );
 };
