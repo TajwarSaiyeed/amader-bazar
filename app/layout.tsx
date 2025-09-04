@@ -2,7 +2,11 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import AuthProvider from "@/providers/auth-provider";
+import { WishlistProvider } from "@/providers/wishlist-provider";
 import { Toaster } from "@/components/ui/sonner";
+import { ConditionalFooter } from "@/components/conditional-footer";
+import { OrderSuccessHandler } from "@/components/order-success-handler";
+import { Suspense } from "react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,12 +37,18 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-background font-sans antialiased`}
       >
         <AuthProvider>
-          <main className={"relative flex flex-col min-h-screen"}>
-            <div className={"flex-grow flex-1"}>
-              {children}
-              <Toaster richColors />
-            </div>
-          </main>
+          <WishlistProvider>
+            <Suspense>
+              <OrderSuccessHandler />
+            </Suspense>
+            <main className={"relative flex flex-col min-h-screen"}>
+              <div className={"flex-grow flex-1"}>
+                {children}
+                <Toaster richColors />
+              </div>
+              <ConditionalFooter />
+            </main>
+          </WishlistProvider>
         </AuthProvider>
       </body>
     </html>

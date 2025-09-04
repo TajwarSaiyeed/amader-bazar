@@ -1,5 +1,4 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -10,6 +9,7 @@ import {
 } from "@/components/ui/table";
 import MaxWidthWrapper from "@/components/max-width-wrapper";
 import { getOrderDetails } from "@/actions/order.actions";
+import { OrderStatusUpdater } from "../components/order-status-updater";
 import Image from "next/image";
 import { dateFormatted, formatPrice } from "@/lib/utils";
 
@@ -54,10 +54,10 @@ const OrderDetails = async ({ params }: OrderDetailsProps) => {
           <Card>
             <CardHeader>
               <CardTitle>Order #{orderId}</CardTitle>
-              <span className="text-sm font-normal leading-none md:text-base">
-                <Badge className="mr-1">Shipped</Badge>
-                Your order has been shipped
-              </span>
+              <OrderStatusUpdater
+                orderId={orderId}
+                currentStatus={order.orderStatus}
+              />
             </CardHeader>
             <CardContent>
               <div className="grid gap-4 md:grid-cols-2">
@@ -81,8 +81,26 @@ const OrderDetails = async ({ params }: OrderDetailsProps) => {
                 </div>
                 <div>
                   <div className="grid gap-1 text-sm">
-                    <div className="font-medium">Transaction Id</div>
-                    <div>{order.transactionId}</div>
+                    <div className="font-medium">Customer Name</div>
+                    <div>{order.customerName || "N/A"}</div>
+                  </div>
+                </div>
+                <div>
+                  <div className="grid gap-1 text-sm">
+                    <div className="font-medium">Customer Email</div>
+                    <div>{order.customerEmail || "N/A"}</div>
+                  </div>
+                </div>
+                <div>
+                  <div className="grid gap-1 text-sm">
+                    <div className="font-medium">Phone Number</div>
+                    <div>{order.phoneNumber || "N/A"}</div>
+                  </div>
+                </div>
+                <div>
+                  <div className="grid gap-1 text-sm">
+                    <div className="font-medium">Stripe Payment ID</div>
+                    <div>{order.stripePaymentIntentId || "N/A"}</div>
                   </div>
                 </div>
                 <div>
@@ -94,7 +112,7 @@ const OrderDetails = async ({ params }: OrderDetailsProps) => {
                 <div>
                   <div className="grid gap-1 text-sm">
                     <div className="font-medium">Payment method</div>
-                    <div>Bkash</div>
+                    <div>Stripe Card Payment</div>
                   </div>
                 </div>
               </div>

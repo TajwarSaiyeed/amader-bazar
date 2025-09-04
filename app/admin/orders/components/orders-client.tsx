@@ -20,7 +20,7 @@ const OrdersClient: FC<OrderClientProps> = ({ data }) => {
         />
       </div>
       <Separator />
-      <DataTable searchKey={"address"} columns={columns} data={data} />
+      <DataTable searchKey={"customerName"} columns={columns} data={data} />
     </>
   );
 };

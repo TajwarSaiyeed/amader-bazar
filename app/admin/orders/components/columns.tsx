@@ -59,14 +59,41 @@ export const columns: ColumnDef<OrderColumn>[] = [
     cell: ({ row }) => <span>{formatPrice(row.original.total)}</span>,
   },
   {
-    header: "Postal Code",
-    accessorKey: "postalCode",
-    cell: ({ row }) => <span>{row.original.postalCode ?? "-"}</span>,
+    header: "Customer",
+    accessorKey: "customerName",
+    cell: ({ row }) => (
+      <div className="flex flex-col">
+        <span className="font-medium">
+          {row.original.customerName || "N/A"}
+        </span>
+        <span className="text-sm text-gray-500">
+          {row.original.customerEmail || "N/A"}
+        </span>
+        <span className="text-sm text-gray-500">
+          {row.original.phoneNumber || "N/A"}
+        </span>
+      </div>
+    ),
   },
   {
-    header: "Transaction ID",
-    accessorKey: "transactionId",
-    cell: ({ row }) => <span>{row.original.transactionId}</span>,
+    header: "Status",
+    accessorKey: "orderStatus",
+    cell: ({ row }) => {
+      const status = row.original.orderStatus;
+      const statusColors = {
+        PENDING: "bg-yellow-100 text-yellow-800",
+        PROCESSING: "bg-blue-100 text-blue-800",
+        SHIPPED: "bg-purple-100 text-purple-800",
+        DELIVERED: "bg-green-100 text-green-800",
+        CANCELLED: "bg-red-100 text-red-800",
+      };
+
+      return (
+        <Badge className={statusColors[status as keyof typeof statusColors]}>
+          {status}
+        </Badge>
+      );
+    },
   },
   {
     header: "Date",

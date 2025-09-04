@@ -6,6 +6,7 @@ import {
   IconFolder,
   IconListDetails,
   IconReport,
+  IconUsers,
 } from "@tabler/icons-react";
 import Image from "next/image";
 import { signOut, useSession } from "next-auth/react";
@@ -48,6 +49,11 @@ const data = {
       title: "Orders",
       url: "/admin/orders",
       icon: IconListDetails,
+    },
+    {
+      title: "Users",
+      url: "/admin/users",
+      icon: IconUsers,
     },
   ],
 };

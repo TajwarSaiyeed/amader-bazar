@@ -6,11 +6,17 @@ import { useCart } from "@/store/use-cart";
 import { toast } from "sonner";
 import type { Product, Category, ProductImage } from "@/generated/prisma";
 
+interface AddToCartButtonProps {
+  product: Product & { category: Category; images: ProductImage[] };
+  size?: "sm" | "default" | "lg" | "icon" | null;
+  className?: string;
+}
+
 const AddToCartButton = ({
   product,
-}: {
-  product: Product & { category: Category; images: ProductImage[] };
-}) => {
+  size = "lg",
+  className,
+}: AddToCartButtonProps) => {
   const { addItem, items } = useCart();
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
 
@@ -36,7 +42,11 @@ const AddToCartButton = ({
   }, [items, addItem, product]);
 
   return (
-    <Button onClick={handleAddToCart} size="lg" className="w-full">
+    <Button
+      onClick={handleAddToCart}
+      size={size}
+      className={`w-full ${className}`}
+    >
       {isSuccess ? "Added!" : "Add to cart"}
     </Button>
   );

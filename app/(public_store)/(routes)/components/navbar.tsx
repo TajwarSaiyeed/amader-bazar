@@ -4,6 +4,7 @@ import MaxWidthWrapper from "@/components/max-width-wrapper";
 import { useSession } from "next-auth/react";
 import { buttonVariants } from "@/components/ui/button";
 import { Cart } from "@/components/cart";
+import { WishlistIcon } from "@/components/wishlist-icon";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
@@ -24,6 +25,7 @@ import {
   IconLogout,
   IconNotification,
   IconUserCircle,
+  IconHeart,
 } from "@tabler/icons-react";
 
 const Navbar = () => {
@@ -153,9 +155,20 @@ const Navbar = () => {
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuGroup>
-                      <DropdownMenuItem>
-                        <IconUserCircle />
-                        Account
+                      <DropdownMenuItem asChild>
+                        <Link href="/dashboard" className="cursor-pointer">
+                          <IconUserCircle />
+                          My Dashboard
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link
+                          href="/dashboard/wishlist"
+                          className="cursor-pointer"
+                        >
+                          <IconHeart />
+                          My Wishlist
+                        </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem>
                         <IconCreditCard />
@@ -174,6 +187,7 @@ const Navbar = () => {
                   </DropdownMenuContent>
                 </DropdownMenu>
               )}
+              <WishlistIcon />
               {session.data?.user?.role !== "ADMIN" && <Cart />}
             </div>
           </div>
