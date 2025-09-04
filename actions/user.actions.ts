@@ -99,6 +99,40 @@ export async function updateUserRole(
   }
 }
 
+export async function updateUserProfile(name: string) {
+  try {
+    const session = await auth();
+
+    if (!session?.user) {
+      return { success: false, error: "Unauthorized" };
+    }
+
+    // Validate name
+    if (!name || name.trim().length === 0) {
+      return { success: false, error: "Name is required" };
+    }
+
+    if (name.trim().length > 100) {
+      return { success: false, error: "Name must be less than 100 characters" };
+    }
+
+    // Update user name
+    const updatedUser = await prisma.user.update({
+      where: { id: session.user.id },
+      data: {
+        name: name.trim(),
+        updatedAt: new Date(),
+      },
+    });
+
+    revalidatePath("/dashboard/settings");
+    return { success: true, error: null, user: updatedUser };
+  } catch (error) {
+    console.error("Error updating user profile:", error);
+    return { success: false, error: "Failed to update profile" };
+  }
+}
+
 export async function getUserById(userId: string) {
   try {
     const session = await auth();
