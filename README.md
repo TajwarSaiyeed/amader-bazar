@@ -136,8 +136,7 @@ STRIPE_SECRET_KEY="sk_test_..."
 STRIPE_WEBHOOK_SECRET="whsec_..."
 
 # UploadThing
-UPLOADTHING_SECRET="your_uploadthing_secret"
-UPLOADTHING_APP_ID="your_uploadthing_app_id"
+UPLOADTHING_TOKEN="your_uploadthing_token"
 
 # Optional: Analytics
 NEXT_PUBLIC_GOOGLE_ANALYTICS="GA_MEASUREMENT_ID"
