@@ -2,6 +2,7 @@ import type { NextAuthConfig } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import prisma from "./lib/prisma";
+import { CustomUser, CustomSession } from "./types";
 
 export default {
   adapter: PrismaAdapter(prisma),
@@ -13,9 +14,10 @@ export default {
   ],
   callbacks: {
     session: async ({ session, token }) => {
-      if (session?.user) {
+      if (session?.user && token) {
         if (token.sub) session.user.id = token.sub;
-        if (token.role) (session.user as any).role = token.role as string;
+        if (token.role)
+          (session.user as any).role = token.role as "USER" | "ADMIN";
       }
       return session;
     },

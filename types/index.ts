@@ -45,3 +45,40 @@ export type SortOption =
   | "name-desc"
   | "price-low-high"
   | "price-high-low";
+
+export interface ProductWhereInput {
+  isFeatured: boolean;
+  isArchived: boolean;
+  categoryId?: string;
+  name?: {
+    contains: string;
+    mode?: "insensitive";
+  };
+  price?: {
+    gte?: number;
+    lte?: number;
+  };
+  createdAt?: {
+    gte: Date;
+  };
+}
+
+export interface ProductOrderByInput {
+  name?: "asc" | "desc";
+  price?: "asc" | "desc";
+  createdAt?: "asc" | "desc";
+}
+
+// Auth types - simplified to match NextAuth types
+export interface CustomUser {
+  id: string;
+  email: string;
+  name?: string;
+  image?: string;
+  role: "USER" | "ADMIN";
+}
+
+export interface CustomSession {
+  user: CustomUser;
+  expires: string;
+}

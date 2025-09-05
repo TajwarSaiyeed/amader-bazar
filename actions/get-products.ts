@@ -2,7 +2,11 @@
 
 import prisma from "@/lib/prisma";
 import type { Category, Product, ProductImage } from "@/generated/prisma";
-import type { SortOption } from "@/types";
+import type {
+  SortOption,
+  ProductWhereInput,
+  ProductOrderByInput,
+} from "@/types";
 
 type ProductWithRelations = Product & {
   category: Category;
@@ -29,8 +33,8 @@ export async function getProducts(
   newOnly?: boolean
 ): Promise<{ error: string | null; products: ProductWithRelations[] }> {
   try {
-    // Build where clause
-    const where: any = {
+    // Build where clause with proper typing
+    const where: ProductWhereInput = {
       isFeatured: true,
       isArchived: false,
     };
@@ -69,8 +73,8 @@ export async function getProducts(
       };
     }
 
-    // Build orderBy clause
-    let orderBy: any = { createdAt: "desc" }; // default: newest first
+    // Build orderBy clause with proper typing
+    let orderBy: ProductOrderByInput = { createdAt: "desc" }; // default: newest first
 
     switch (sort) {
       case "name-asc":
@@ -93,12 +97,32 @@ export async function getProducts(
 
     const products = (await prisma.product.findMany({
       where,
-      include: {
-        category: true,
-        images: true,
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        price: true,
+        isFeatured: true,
+        isArchived: true,
+        categoryId: true,
+        createdAt: true,
+        updatedAt: true,
+        category: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        images: {
+          select: {
+            id: true,
+            url: true,
+          },
+          take: 3, // Limit images for performance
+        },
       },
       orderBy,
-      take: limit ?? 50,
+      take: Math.min(limit ?? 50, 100), // Cap maximum results
     })) as unknown as ProductWithRelations[];
 
     return { error: null, products };

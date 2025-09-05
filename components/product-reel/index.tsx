@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, memo } from "react";
 import Link from "next/link";
 import { IProductsProps } from "@/types";
 import ProductListing from "@/components/product-listing";
@@ -13,7 +13,7 @@ interface ProductReelProps extends IProductsProps {
   skeletonNumber?: number;
 }
 
-const ProductReel = (props: ProductReelProps) => {
+const ProductReel = memo((props: ProductReelProps) => {
   const {
     title,
     subtitle,
@@ -28,13 +28,14 @@ const ProductReel = (props: ProductReelProps) => {
   >([]);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
-  let products = null;
-
-  if (!loading && data) {
-    products = data;
-  } else {
-    products = new Array(skeletonNumber).fill(null);
-  }
+  // Memoize products calculation
+  const products = useMemo(() => {
+    if (!loading && data) {
+      return data;
+    } else {
+      return new Array(skeletonNumber).fill(null);
+    }
+  }, [loading, data, skeletonNumber]);
 
   // Handle smooth transitions when products change
   useEffect(() => {
@@ -57,6 +58,17 @@ const ProductReel = (props: ProductReelProps) => {
       setDisplayProducts(products);
     }
   }, [products, displayProducts.length]);
+
+  // Memoize grid class
+  const gridClassName = useMemo(
+    () =>
+      `w-full grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 md:grid-cols-4 md:gap-y-10 lg:gap-x-8 transition-all duration-300 ease-in-out ${
+        isTransitioning
+          ? "opacity-60 transform scale-[0.98]"
+          : "opacity-100 transform scale-100"
+      }`,
+    [isTransitioning]
+  );
 
   return (
     <section className={"py-12"}>
@@ -88,13 +100,7 @@ const ProductReel = (props: ProductReelProps) => {
       </div>
       <div className={"relative"}>
         <div className={"mt-6 flex items-center w-full"}>
-          <div
-            className={`w-full grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 md:grid-cols-4 md:gap-y-10 lg:gap-x-8 transition-all duration-300 ease-in-out ${
-              isTransitioning
-                ? "opacity-60 transform scale-[0.98]"
-                : "opacity-100 transform scale-100"
-            }`}
-          >
+          <div className={gridClassName}>
             {displayProducts.map((product, i) => (
               <div
                 key={`${product?.id || i}-${i}`}
@@ -108,6 +114,8 @@ const ProductReel = (props: ProductReelProps) => {
       </div>
     </section>
   );
-};
+});
+
+ProductReel.displayName = "ProductReel";
 
 export default ProductReel;

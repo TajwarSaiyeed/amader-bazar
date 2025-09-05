@@ -4,9 +4,11 @@ import { revalidatePath } from "next/cache";
 import Stripe from "stripe";
 import { stripe } from "@/lib/stripe";
 import prisma from "@/lib/prisma";
+import { logger } from "@/lib/logger";
+import { withRateLimit, rateLimitConfigs } from "@/lib/rate-limit";
 
-export async function POST(request: NextRequest) {
-  console.log("🔗 Webhook received");
+async function handleWebhook(request: NextRequest) {
+  logger.info("Stripe webhook received");
 
   try {
     const buf = await request.arrayBuffer();
@@ -15,19 +17,18 @@ export async function POST(request: NextRequest) {
     const headersList = await headers();
     const signature = headersList.get("Stripe-Signature");
 
-    console.log("📝 Signature:", signature ? "Present" : "Missing");
-    console.log(
-      "🔑 Webhook Secret:",
-      process.env.STRIPE_WEBHOOK_SECRET ? "Present" : "Missing"
-    );
+    logger.debug("Signature validation", {
+      hasSignature: !!signature,
+      hasWebhookSecret: !!process.env.STRIPE_WEBHOOK_SECRET,
+    });
 
     if (!signature) {
-      console.error("❌ No signature found in headers");
+      logger.error("No signature found in headers");
       return NextResponse.json({ error: "No signature" }, { status: 400 });
     }
 
     if (!process.env.STRIPE_WEBHOOK_SECRET) {
-      console.error("❌ No webhook secret in environment");
+      logger.error("No webhook secret in environment");
       return NextResponse.json({ error: "No webhook secret" }, { status: 500 });
     }
 
@@ -39,19 +40,19 @@ export async function POST(request: NextRequest) {
         signature,
         process.env.STRIPE_WEBHOOK_SECRET!
       );
-      console.log("✅ Signature verified successfully");
+      logger.debug("Signature verified successfully");
     } catch (err) {
-      console.error("❌ Signature verification failed:", err);
+      logger.error("Signature verification failed", err);
       return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
     }
 
-    console.log("📦 Event type:", event.type);
+    logger.info("Processing webhook event", { type: event.type });
 
     try {
       switch (event.type) {
         case "checkout.session.completed": {
           const session = event.data.object as Stripe.Checkout.Session;
-          console.log("💳 Processing checkout session:", session.id);
+          logger.info("Processing checkout session", { sessionId: session.id });
 
           const userId = session.metadata?.userId;
           const productIds = session.metadata?.productIds
@@ -59,9 +60,11 @@ export async function POST(request: NextRequest) {
             : [];
           const total = parseFloat(session.metadata?.total || "0");
 
-          console.log("👤 User ID:", userId);
-          console.log("🛒 Product IDs:", productIds);
-          console.log("💰 Total:", total);
+          logger.debug("Checkout session details", {
+            userId,
+            productCount: productIds.length,
+            total,
+          });
 
           const customerDetails = session.customer_details;
 
@@ -78,7 +81,7 @@ export async function POST(request: NextRequest) {
             : "No address provided";
 
           if (userId && productIds.length > 0) {
-            console.log("🏗️ Creating order in database...");
+            logger.info("Creating order in database");
 
             const order = await prisma.order.create({
               data: {
@@ -106,15 +109,15 @@ export async function POST(request: NextRequest) {
               },
             });
 
-            console.log("✅ Order created successfully:", order.id);
+            logger.info("Order created successfully", { orderId: order.id });
 
             revalidatePath("/admin/overview");
             revalidatePath("/admin/orders");
             revalidatePath("/admin");
             revalidatePath("/dashboard/orders");
-            console.log("🔄 Pages revalidated for fresh data");
+            logger.debug("Pages revalidated for fresh data");
           } else {
-            console.warn("⚠️ Missing userId or productIds:", {
+            logger.warn("Missing userId or productIds", {
               userId,
               productIds,
             });
@@ -124,30 +127,35 @@ export async function POST(request: NextRequest) {
 
         case "payment_intent.succeeded": {
           const paymentIntent = event.data.object as Stripe.PaymentIntent;
-          console.log("✅ Payment succeeded:", paymentIntent.id);
+          logger.info("Payment succeeded", {
+            paymentIntentId: paymentIntent.id,
+          });
           break;
         }
 
         case "payment_intent.payment_failed": {
           const paymentIntent = event.data.object as Stripe.PaymentIntent;
-          console.log("❌ Payment failed:", paymentIntent.id);
+          logger.warn("Payment failed", { paymentIntentId: paymentIntent.id });
           break;
         }
 
         default:
-          console.log(`⚠️ Unhandled event type: ${event.type}`);
+          logger.debug("Unhandled event type", { type: event.type });
       }
 
       return NextResponse.json({ received: true });
     } catch (error) {
-      console.error("❌ Webhook processing error:", error);
+      logger.error("Webhook processing error", error);
       return NextResponse.json(
         { error: "Webhook processing error" },
         { status: 500 }
       );
     }
   } catch (error) {
-    console.error("❌ Webhook error:", error);
+    logger.error("Webhook error", error);
     return NextResponse.json({ error: "Webhook error" }, { status: 500 });
   }
 }
+
+// Apply rate limiting to the webhook endpoint
+export const POST = withRateLimit(handleWebhook, rateLimitConfigs.webhook);
