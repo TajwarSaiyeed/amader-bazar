@@ -1,4 +1,6 @@
-import React from "react";
+"use client";
+
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { IProductsProps } from "@/types";
 import ProductListing from "@/components/product-listing";
@@ -21,6 +23,11 @@ const ProductReel = (props: ProductReelProps) => {
     skeletonNumber = 4,
   } = props;
 
+  const [displayProducts, setDisplayProducts] = useState<
+    IProductsProps["data"]
+  >([]);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
   let products = null;
 
   if (!loading && data) {
@@ -28,6 +35,28 @@ const ProductReel = (props: ProductReelProps) => {
   } else {
     products = new Array(skeletonNumber).fill(null);
   }
+
+  // Handle smooth transitions when products change
+  useEffect(() => {
+    if (products) {
+      setIsTransitioning(true);
+
+      // Small delay to allow fade-out animation
+      const timer = setTimeout(() => {
+        setDisplayProducts(products);
+        setIsTransitioning(false);
+      }, 150);
+
+      return () => clearTimeout(timer);
+    }
+  }, [products]);
+
+  // Initialize display products on first render
+  useEffect(() => {
+    if (products && displayProducts.length === 0) {
+      setDisplayProducts(products);
+    }
+  }, [products, displayProducts.length]);
 
   return (
     <section className={"py-12"}>
@@ -60,12 +89,19 @@ const ProductReel = (props: ProductReelProps) => {
       <div className={"relative"}>
         <div className={"mt-6 flex items-center w-full"}>
           <div
-            className={
-              "w-full grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 md:grid-cols-4 md:gap-y-10 lg:gap-x-8"
-            }
+            className={`w-full grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 md:grid-cols-4 md:gap-y-10 lg:gap-x-8 transition-all duration-300 ease-in-out ${
+              isTransitioning
+                ? "opacity-60 transform scale-[0.98]"
+                : "opacity-100 transform scale-100"
+            }`}
           >
-            {products.map((product, i) => (
-              <ProductListing key={i} index={i} product={product} />
+            {displayProducts.map((product, i) => (
+              <div
+                key={`${product?.id || i}-${i}`}
+                className="transition-all duration-200 ease-in-out"
+              >
+                <ProductListing index={i} product={product} />
+              </div>
             ))}
           </div>
         </div>

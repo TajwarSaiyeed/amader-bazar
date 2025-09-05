@@ -1,13 +1,7 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import MaxWidthWrapper from "@/components/max-width-wrapper";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   ArrowLeft,

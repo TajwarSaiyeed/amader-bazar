@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -21,6 +21,7 @@ import { X, Tag, DollarSign, ArrowUpDown, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import DoubleRangeSlider from "@/components/ui/double-range-slider";
 import { formatPrice } from "@/lib/utils";
+import { useDebounce } from "@/store/useDebounce";
 import type { SortOption } from "@/types";
 
 interface Category {
@@ -45,6 +46,10 @@ const ProductFilters = ({ categories }: ProductFiltersProps) => {
 
   // UI states
   const [activeFiltersCount, setActiveFiltersCount] = useState<number>(0);
+  const [isUpdating, setIsUpdating] = useState<boolean>(false);
+
+  // Debounce price range changes to avoid excessive API calls
+  const debouncedPriceRange = useDebounce(priceRange, 500);
 
   // Initialize filters from URL params
   useEffect(() => {
@@ -69,31 +74,48 @@ const ProductFilters = ({ categories }: ProductFiltersProps) => {
   useEffect(() => {
     let count = 0;
     if (selectedCategory) count++;
-    if (priceRange[0] > 0 || priceRange[1] < 10000) count++;
+    if (debouncedPriceRange[0] > 0 || debouncedPriceRange[1] < 10000) count++;
     if (showNewOnly) count++;
     if (sortBy !== "newest") count++;
     setActiveFiltersCount(count);
-  }, [selectedCategory, priceRange, showNewOnly, sortBy]);
+  }, [selectedCategory, debouncedPriceRange, showNewOnly, sortBy]);
 
-  const updateURL = (updates: Record<string, string | null>) => {
-    const params = new URLSearchParams(searchParams.toString());
+  const updateURL = useCallback(
+    (updates: Record<string, string | null>) => {
+      setIsUpdating(true);
 
-    // Keep the search query if it exists
-    const currentSearch = searchParams.get("name");
-    if (currentSearch) {
-      params.set("name", currentSearch);
-    }
+      const params = new URLSearchParams(searchParams.toString());
 
-    Object.entries(updates).forEach(([key, value]) => {
-      if (value && value !== "") {
-        params.set(key, value);
-      } else {
-        params.delete(key);
+      // Keep the search query if it exists
+      const currentSearch = searchParams.get("name");
+      if (currentSearch) {
+        params.set("name", currentSearch);
       }
-    });
 
-    router.push(`${pathname}?${params.toString()}`);
-  };
+      Object.entries(updates).forEach(([key, value]) => {
+        if (value && value !== "") {
+          params.set(key, value);
+        } else {
+          params.delete(key);
+        }
+      });
+
+      router.push(`${pathname}?${params.toString()}`);
+
+      // Reset updating state after a short delay
+      setTimeout(() => setIsUpdating(false), 150);
+    },
+    [router, pathname, searchParams]
+  );
+
+  // Update URL when debounced price range changes
+  useEffect(() => {
+    const [minPrice, maxPrice] = debouncedPriceRange;
+    updateURL({
+      minPrice: minPrice > 0 ? minPrice.toString() : null,
+      maxPrice: maxPrice < 10000 ? maxPrice.toString() : null,
+    });
+  }, [debouncedPriceRange, updateURL]);
 
   const handleCategoryChange = (value: string) => {
     const categoryValue = value === "all" ? "" : value;
@@ -108,10 +130,7 @@ const ProductFilters = ({ categories }: ProductFiltersProps) => {
 
   const handlePriceRangeChange = (newRange: [number, number]) => {
     setPriceRange(newRange);
-    updateURL({
-      minPrice: newRange[0] > 0 ? newRange[0].toString() : null,
-      maxPrice: newRange[1] < 10000 ? newRange[1].toString() : null,
-    });
+    // URL update happens via useEffect with debounced value
   };
 
   const handleNewOnlyToggle = () => {
@@ -147,7 +166,11 @@ const ProductFilters = ({ categories }: ProductFiltersProps) => {
   return (
     <div className="w-full mb-8">
       {/* Filter Bar */}
-      <div className="flex flex-col lg:flex-row gap-4 p-4 bg-gray-50 dark:bg-gray-900/50 rounded-xl border">
+      <div
+        className={`flex flex-col lg:flex-row gap-4 p-4 bg-gray-50 dark:bg-gray-900/50 rounded-xl border transition-opacity duration-150 ${
+          isUpdating ? "opacity-70" : "opacity-100"
+        }`}
+      >
         {/* Quick Sort & Category - Always Visible */}
         <div className="flex flex-1 gap-3">
           {/* Sort */}
@@ -197,6 +220,7 @@ const ProductFilters = ({ categories }: ProductFiltersProps) => {
             <Label
               htmlFor="newOnly"
               className="text-sm font-medium cursor-pointer"
+              title="Show products added within the last 30 days"
             >
               New
             </Label>
@@ -231,6 +255,9 @@ const ProductFilters = ({ categories }: ProductFiltersProps) => {
             <PopoverContent className="w-80" align="end">
               <div className="space-y-4">
                 <div className="text-sm font-medium">Set Price Range</div>
+                <div className="text-xs text-muted-foreground mb-2">
+                  Changes apply automatically after you stop adjusting
+                </div>
                 <DoubleRangeSlider
                   min={0}
                   max={10000}
@@ -287,13 +314,13 @@ const ProductFilters = ({ categories }: ProductFiltersProps) => {
                 </Button>
               </Badge>
             )}
-            {(priceRange[0] > 0 || priceRange[1] < 10000) && (
+            {(debouncedPriceRange[0] > 0 || debouncedPriceRange[1] < 10000) && (
               <Badge
                 variant="outline"
                 className="bg-white dark:bg-gray-800 border-blue-300 dark:border-blue-700"
               >
-                Price: {formatPrice(priceRange[0])} -{" "}
-                {formatPrice(priceRange[1])}
+                Price: {formatPrice(debouncedPriceRange[0])} -{" "}
+                {formatPrice(debouncedPriceRange[1])}
                 <Button
                   variant="ghost"
                   size="sm"

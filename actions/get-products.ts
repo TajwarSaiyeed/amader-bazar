@@ -59,7 +59,8 @@ export async function getProducts(
       }
     }
 
-    // New products filter (last 30 days)
+    // New products filter (products created within the last 30 days)
+    // This helps users discover recently added inventory
     if (newOnly) {
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);

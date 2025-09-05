@@ -14,7 +14,6 @@ import {
   HelpCircle,
   Package,
   RefreshCw,
-  MessageCircle,
   Shield,
   FileText,
   ArrowRight,
