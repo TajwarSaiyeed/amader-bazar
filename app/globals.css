@@ -120,4 +120,46 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Hide scrollbars globally while maintaining functionality */
+  * {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+  }
+
+  *::-webkit-scrollbar {
+    display: none; /* Safari and Chrome */
+    width: 0px;
+    height: 0px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background: transparent;
+  }
+
+  /* Ensure content is still scrollable with smooth behavior */
+  html {
+    scroll-behavior: smooth;
+    overflow: auto;
+  }
+
+  body {
+    overflow: auto;
+  }
+
+  /* Specific handling for mobile sheets and dialogs */
+  [data-slot="sheet-content"],
+  [data-radix-popper-content-wrapper] {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  [data-slot="sheet-content"]::-webkit-scrollbar,
+  [data-radix-popper-content-wrapper]::-webkit-scrollbar {
+    display: none;
+  }
 }

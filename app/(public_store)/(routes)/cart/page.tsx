@@ -63,13 +63,13 @@ const CartPage = () => {
             >
               {isMounted &&
                 items.map((product) => {
-                  const image = product?.images[0];
+                  const image = product?.images?.[0];
 
                   return (
                     <li key={product.id} className="flex py-6 sm:py-10">
                       <div className="flex-shrink-0">
                         <div className="relative h-24 w-24">
-                          {image && image.url ? (
+                          {image?.url ? (
                             <Image
                               fill
                               src={image.url}
@@ -77,7 +77,13 @@ const CartPage = () => {
                               className="h-full w-full rounded-md object-cover object-center sm:h-48 sm:w-48"
                               sizes="(max-width: 640px) 96px, 192px"
                             />
-                          ) : null}
+                          ) : (
+                            <div className="h-full w-full rounded-md bg-gray-200 flex items-center justify-center">
+                              <span className="text-gray-400 text-xs">
+                                No Image
+                              </span>
+                            </div>
+                          )}
                         </div>
                       </div>
 
@@ -90,19 +96,19 @@ const CartPage = () => {
                                   href={`/products/${product.id}`}
                                   className="font-medium text-gray-700 hover:text-gray-800 dark:hover:text-gray-400 dark:text-gray-100"
                                 >
-                                  {product.name}
+                                  {product?.name || "Unnamed Product"}
                                 </Link>
                               </h3>
                             </div>
 
                             <div className="mt-1 flex text-sm">
                               <p className="text-muted-foreground">
-                                Category: {product.category.name}
+                                Category: {product?.category?.name || "Unknown"}
                               </p>
                             </div>
 
                             <p className="mt-1 text-sm font-medium text-gray-900 dark:text-gray-100">
-                              {formatPrice(product.price)}
+                              {formatPrice(product?.price || 0)}
                             </p>
                           </div>
 

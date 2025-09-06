@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { auth } from "@/auth";
+import { requireAdminAuth } from "@/lib/auth-utils";
 import prisma from "@/lib/prisma";
 import { categoryFormSchema } from "@/schemas/category-schemas";
 
@@ -13,8 +13,7 @@ export async function createCategory(
   input: z.infer<typeof CreateCategorySchema>
 ): Promise<{ ok: true; id: string } | { ok: false; error: string }> {
   try {
-    const session = await auth();
-    if (!session?.user) return { ok: false, error: "Unauthorized" };
+    await requireAdminAuth();
 
     const values = CreateCategorySchema.parse(input);
 
@@ -33,8 +32,7 @@ export async function updateCategory(
   input: z.infer<typeof UpdateCategorySchema>
 ): Promise<{ ok: true } | { ok: false; error: string }> {
   try {
-    const session = await auth();
-    if (!session?.user) return { ok: false, error: "Unauthorized" };
+    await requireAdminAuth();
 
     const { id, ...values } = UpdateCategorySchema.parse(input);
 
@@ -51,10 +49,7 @@ export async function updateCategory(
 }
 
 export async function deleteCategory(id: string) {
-  const session = await auth();
-  if (!session?.user) {
-    throw new Error("Unauthorized");
-  }
+  await requireAdminAuth();
 
   // Check if category has any products
   const productsCount = await prisma.product.count({
@@ -75,10 +70,7 @@ export async function deleteCategory(id: string) {
 }
 
 export async function getAllCategories() {
-  const session = await auth();
-  if (!session?.user) {
-    throw new Error("Unauthorized");
-  }
+  await requireAdminAuth();
 
   return await prisma.category.findMany({
     orderBy: {

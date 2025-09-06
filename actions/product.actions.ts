@@ -1,9 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { z } from "zod";
-import { auth } from "@/auth";
+import { requireAdminAuth } from "@/lib/auth-utils";
 import prisma from "@/lib/prisma";
 import { productFormSchema } from "@/schemas/product-schemas";
 import { deleteImageUploadthings } from "@/actions/delete-image-uploadthing";
@@ -15,10 +14,7 @@ export async function createProduct(
   input: z.infer<typeof CreateProductSchema>
 ): Promise<{ ok: true; id: string } | { ok: false; error: string }> {
   try {
-    const session = await auth();
-    if (!session?.user) {
-      return { ok: false, error: "Unauthorized" };
-    }
+    await requireAdminAuth();
 
     const values = CreateProductSchema.parse(input);
 
@@ -52,10 +48,7 @@ export async function updateProduct(
   input: z.infer<typeof UpdateProductSchema>
 ): Promise<{ ok: true } | { ok: false; error: string }> {
   try {
-    const session = await auth();
-    if (!session?.user) {
-      return { ok: false, error: "Unauthorized" };
-    }
+    await requireAdminAuth();
 
     const { id, images, ...values } = UpdateProductSchema.parse(input);
 
@@ -83,10 +76,7 @@ export async function updateProduct(
 }
 
 export async function deleteProduct(id: string) {
-  const session = await auth();
-  if (!session?.user) {
-    throw new Error("Unauthorized");
-  }
+  await requireAdminAuth();
 
   // Check if product is in any orders
   const orderItemsCount = await prisma.orderItem.count({
@@ -143,10 +133,7 @@ export async function deleteProduct(id: string) {
 }
 
 export async function getAllProducts() {
-  const session = await auth();
-  if (!session?.user) {
-    throw new Error("Unauthorized");
-  }
+  await requireAdminAuth();
 
   return await prisma.product.findMany({
     include: {
@@ -160,10 +147,7 @@ export async function getAllProducts() {
 }
 
 export async function getAllCategories() {
-  const session = await auth();
-  if (!session?.user) {
-    throw new Error("Unauthorized");
-  }
+  await requireAdminAuth();
 
   return await prisma.category.findMany({
     orderBy: {

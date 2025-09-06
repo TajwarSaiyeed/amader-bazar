@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { auth } from "@/auth";
+import { requireAdminAuth } from "@/lib/auth-utils";
 import prisma from "@/lib/prisma";
 import { billboardFormSchema } from "@/schemas/billboard-schemas";
 import { deleteImageUploadthings } from "@/actions/delete-image-uploadthing";
@@ -14,10 +14,7 @@ export async function createBillboard(
   input: z.infer<typeof CreateBillboardSchema>
 ): Promise<{ ok: true; id: string } | { ok: false; error: string }> {
   try {
-    const session = await auth();
-    if (!session?.user) {
-      return { ok: false, error: "Unauthorized" };
-    }
+    await requireAdminAuth();
 
     const values = CreateBillboardSchema.parse(input);
 
@@ -36,10 +33,7 @@ export async function updateBillboard(
   input: z.infer<typeof UpdateBillboardSchema>
 ): Promise<{ ok: true } | { ok: false; error: string }> {
   try {
-    const session = await auth();
-    if (!session?.user) {
-      return { ok: false, error: "Unauthorized" };
-    }
+    await requireAdminAuth();
 
     const { id, ...values } = UpdateBillboardSchema.parse(input);
 
@@ -56,10 +50,7 @@ export async function updateBillboard(
 }
 
 export async function deleteBillboard(id: string) {
-  const session = await auth();
-  if (!session?.user) {
-    throw new Error("Unauthorized");
-  }
+  await requireAdminAuth();
 
   // First, get the billboard to access the image URL
   const billboard = await prisma.billboard.findUnique({

@@ -77,10 +77,12 @@ export function DashboardRefresh() {
   const { color, status } = getDataFreshnessStatus();
 
   return (
-    <div className="flex items-center gap-4">
-      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+    <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:gap-4">
+      <div className="flex items-center gap-2 text-sm text-muted-foreground order-2 lg:order-1">
         <Clock className="h-4 w-4" />
-        Last updated: {formatLastRefresh(lastRefresh)}
+        <span className="hidden sm:inline">Last updated:</span>
+        <span className="sm:hidden">Updated:</span>
+        {formatLastRefresh(lastRefresh)}
         <span
           className={`ml-2 px-2 py-1 rounded-full text-xs font-medium ${color}`}
         >
@@ -88,29 +90,36 @@ export function DashboardRefresh() {
         </span>
       </div>
 
-      <div className="flex items-center gap-2">
-        <Switch
-          id="auto-refresh"
-          checked={autoRefresh}
-          onCheckedChange={setAutoRefresh}
-        />
-        <Label htmlFor="auto-refresh" className="text-sm">
-          Auto refresh {autoRefresh ? `(${countdown}s)` : "(30s)"}
-        </Label>
-      </div>
+      <div className="flex items-center justify-between gap-4 order-1 lg:order-2">
+        <div className="flex items-center gap-2">
+          <Switch
+            id="auto-refresh"
+            checked={autoRefresh}
+            onCheckedChange={setAutoRefresh}
+          />
+          <Label htmlFor="auto-refresh" className="text-sm">
+            <span className="hidden sm:inline">Auto refresh</span>
+            <span className="sm:hidden">Auto</span>
+            {autoRefresh ? ` (${countdown}s)` : " (30s)"}
+          </Label>
+        </div>
 
-      <Button
-        onClick={handleRefresh}
-        disabled={isRefreshing}
-        variant="outline"
-        size="sm"
-        className="flex items-center gap-2"
-      >
-        <RefreshCw
-          className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`}
-        />
-        {isRefreshing ? "Refreshing..." : "Refresh"}
-      </Button>
+        <Button
+          onClick={handleRefresh}
+          disabled={isRefreshing}
+          variant="outline"
+          size="sm"
+          className="flex items-center gap-2 flex-shrink-0"
+        >
+          <RefreshCw
+            className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`}
+          />
+          <span className="hidden sm:inline">
+            {isRefreshing ? "Refreshing..." : "Refresh"}
+          </span>
+          <span className="sm:hidden">{isRefreshing ? "..." : "Refresh"}</span>
+        </Button>
+      </div>
     </div>
   );
 }

@@ -1,14 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { auth } from "@/auth";
+import { requireAdminAuth } from "@/lib/auth-utils";
 
 export async function refreshDashboard() {
-  const session = await auth();
-
-  if (!session?.user || session.user.role !== "ADMIN") {
-    throw new Error("Unauthorized");
-  }
+  await requireAdminAuth();
 
   try {
     revalidatePath("/admin/overview");

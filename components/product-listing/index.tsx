@@ -34,10 +34,12 @@ const ProductListing = ({ product, index }: ProductListingProps) => {
         })}
       >
         <div className={"flex flex-col w-full relative"}>
-          <div className="relative">
+          <div className="relative group/image">
             <Link href={`/products/${product.id}`}>
               <ProductImageSlider images={images} />
             </Link>
+
+            {/* Wishlist Button */}
             <WishlistButton
               productId={product.id}
               initialWishlistState={product.isInWishlist}
