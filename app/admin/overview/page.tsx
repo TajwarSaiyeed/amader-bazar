@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import {
   getDashboardData,
   getProductsByCategory,
@@ -7,11 +6,6 @@ import { Heading } from "@/components/heading";
 import { MetricCards } from "@/components/dashboard/metric-cards";
 import { DashboardCharts } from "@/components/dashboard/dashboard-charts";
 import { RecentOrders } from "@/components/dashboard/recent-orders";
-import {
-  MetricCardSkeleton,
-  ChartSkeleton,
-  RecentOrdersSkeleton,
-} from "@/components/dashboard/loading-skeletons";
 import MaxWidthWrapper from "@/components/max-width-wrapper";
 import { DashboardRefresh } from "@/components/dashboard/dashboard-refresh";
 
@@ -39,12 +33,14 @@ async function DashboardContent() {
 
   return (
     <div className="flex flex-col space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col space-y-4 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
         <Heading
           title="Overview"
           description="Admin dashboard with key metrics and analytics"
         />
-        <DashboardRefresh />
+        <div className="flex-shrink-0">
+          <DashboardRefresh />
+        </div>
       </div>
 
       {/* Metric Cards */}
@@ -70,30 +66,12 @@ async function DashboardContent() {
 
 export default function AdminOverviewPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="flex flex-col space-y-6">
-          <Heading title="Overview" description="Loading dashboard..." />
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <MetricCardSkeleton key={i} />
-            ))}
-          </div>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-            <ChartSkeleton className="col-span-4" />
-            <ChartSkeleton className="col-span-3" />
-          </div>
-          <RecentOrdersSkeleton />
+    <MaxWidthWrapper>
+      <div className={"flex-col"}>
+        <div className={"flex-1 space-y-4 p-8 pt-6"}>
+          <DashboardContent />
         </div>
-      }
-    >
-      <MaxWidthWrapper>
-        <div className={"flex-col"}>
-          <div className={"flex-1 space-y-4 p-8 pt-6"}>
-            <DashboardContent />
-          </div>
-        </div>
-      </MaxWidthWrapper>
-    </Suspense>
+      </div>
+    </MaxWidthWrapper>
   );
 }

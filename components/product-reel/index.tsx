@@ -4,6 +4,7 @@ import React, { useState, useEffect, useMemo, memo } from "react";
 import Link from "next/link";
 import { IProductsProps } from "@/types";
 import ProductListing from "@/components/product-listing";
+import { Button } from "@/components/ui/button";
 
 interface ProductReelProps extends IProductsProps {
   title: string;
@@ -98,6 +99,24 @@ const ProductReel = memo((props: ProductReelProps) => {
           </Link>
         ) : null}
       </div>
+
+      {/* Mobile "View All" Button */}
+      {href && (
+        <div className="md:hidden mb-6 px-4 lg:px-0">
+          <Link href={href} className="block">
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full text-primary border-primary hover:bg-primary hover:text-white"
+            >
+              View All {title || "Products"}
+              <span aria-hidden={true} className="ml-1">
+                &rarr;
+              </span>
+            </Button>
+          </Link>
+        </div>
+      )}
       <div className={"relative"}>
         <div className={"mt-6 flex items-center w-full"}>
           <div className={gridClassName}>
