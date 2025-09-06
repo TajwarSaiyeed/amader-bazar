@@ -1,16 +1,12 @@
 "use server";
 
-import { auth } from "@/auth";
+import { requireAuth, checkAuthWithoutRedirect } from "@/lib/auth-utils";
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
 export async function addToWishlist(productId: string) {
   try {
-    const session = await auth();
-
-    if (!session?.user?.id) {
-      throw new Error("Unauthorized");
-    }
+    const session = await requireAuth();
 
     const existingWishlistItem = await prisma.wishlist.findUnique({
       where: {
@@ -48,11 +44,7 @@ export async function addToWishlist(productId: string) {
 
 export async function removeFromWishlist(productId: string) {
   try {
-    const session = await auth();
-
-    if (!session?.user?.id) {
-      throw new Error("Unauthorized");
-    }
+    const session = await requireAuth();
 
     await prisma.wishlist.delete({
       where: {
@@ -81,11 +73,7 @@ export async function removeFromWishlist(productId: string) {
 
 export async function toggleWishlist(productId: string) {
   try {
-    const session = await auth();
-
-    if (!session?.user?.id) {
-      throw new Error("Unauthorized");
-    }
+    const session = await requireAuth();
 
     const existingWishlistItem = await prisma.wishlist.findUnique({
       where: {
@@ -143,11 +131,7 @@ export async function toggleWishlist(productId: string) {
 
 export async function getUserWishlist() {
   try {
-    const session = await auth();
-
-    if (!session?.user?.id) {
-      throw new Error("Unauthorized");
-    }
+    const session = await requireAuth();
 
     const wishlist = await prisma.wishlist.findMany({
       where: {
@@ -180,7 +164,7 @@ export async function getUserWishlist() {
 
 export async function checkIfInWishlist(productId: string) {
   try {
-    const session = await auth();
+    const session = await checkAuthWithoutRedirect();
 
     if (!session?.user?.id) {
       return { success: true, inWishlist: false };
@@ -209,7 +193,7 @@ export async function checkIfInWishlist(productId: string) {
 
 export async function getWishlistCount() {
   try {
-    const session = await auth();
+    const session = await checkAuthWithoutRedirect();
 
     if (!session?.user?.id) {
       return { success: true, count: 0 };

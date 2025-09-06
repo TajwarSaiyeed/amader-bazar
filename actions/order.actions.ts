@@ -1,12 +1,11 @@
 "use server";
 
 import prisma from "@/lib/prisma";
-import { auth } from "@/auth";
+import { requireAuth, requireAdminAuth } from "@/lib/auth-utils";
 import { revalidatePath } from "next/cache";
 
 export async function getAllOrders() {
-  const session = await auth();
-  if (!session?.user) throw new Error("Unauthorized");
+  await requireAdminAuth();
 
   return prisma.order.findMany({
     orderBy: { createdAt: "desc" },
@@ -22,8 +21,7 @@ export async function getAllOrders() {
 }
 
 export async function getOrderDetails(orderId: string) {
-  const session = await auth();
-  if (!session?.user) return { order: null, error: "Unauthorized" } as const;
+  await requireAuth();
 
   try {
     const order = await prisma.order.findUnique({
@@ -56,11 +54,7 @@ export async function updateOrderStatus(
   orderId: string,
   newStatus: "PENDING" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED"
 ) {
-  const session = await auth();
-
-  if (!session?.user || session.user.role !== "ADMIN") {
-    return { success: false, error: "Unauthorized" };
-  }
+  await requireAdminAuth();
 
   try {
     const order = await prisma.order.findUnique({

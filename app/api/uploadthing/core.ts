@@ -1,20 +1,19 @@
 import { createUploadthing, type FileRouter } from "uploadthing/next";
-import { auth } from "@/auth";
+import { requireAuth } from "@/lib/auth-utils";
 
 const f = createUploadthing();
 
-const requireAuth = async () => {
-  const session = await auth();
-  if (!session?.user) throw new Error("Unauthorized");
+const requireAuthForUpload = async () => {
+  const session = await requireAuth();
   return { userId: session.user.id };
 };
 
 export const ourFileRouter = {
   imageUrl: f({ image: { maxFileSize: "2MB" } })
-    .middleware(() => requireAuth())
+    .middleware(() => requireAuthForUpload())
     .onUploadComplete(() => {}),
   productImages: f({ image: { maxFileSize: "2MB", maxFileCount: 4 } })
-    .middleware(() => requireAuth())
+    .middleware(() => requireAuthForUpload())
     .onUploadComplete(() => {}),
 } satisfies FileRouter;
 

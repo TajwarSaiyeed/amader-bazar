@@ -1,14 +1,11 @@
 "use server";
 
-import { auth } from "@/auth";
+import { requireAuth } from "@/lib/auth-utils";
 import { stripe } from "@/lib/stripe";
 import prisma from "@/lib/prisma";
 
 export async function createStripeCheckout(cartItems: string[]) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    throw new Error("Unauthorized");
-  }
+  const session = await requireAuth();
 
   try {
     // Get products for line items

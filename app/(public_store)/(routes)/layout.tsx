@@ -1,12 +1,14 @@
 import { ReactNode } from "react";
 import { Metadata } from "next";
 import Navbar from "./components/navbar";
+import { MobileEnhancements } from "@/components/mobile-enhancements";
 
 const StoreLayout = ({ children }: { children: ReactNode }) => {
   return (
     <>
       <Navbar />
       {children}
+      <MobileEnhancements />
     </>
   );
 };
